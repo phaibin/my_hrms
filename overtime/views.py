@@ -20,7 +20,7 @@ class PersonForm(forms.ModelForm):
 def index(request):
     ctx = {}
     ctx['applications'] = Application.objects.all()
-    return render(request, 'index.html', ctx)
+    return render(request, 'overtime/index.html', ctx)
 
 def new(request):
     appForm = ApplicationForm()
@@ -28,8 +28,8 @@ def new(request):
         appForm = ApplicationForm(request.POST)
         if appForm.is_valid():
             appForm.save()
-            return HttpResponseRedirect(reverse('ot_idx'))
-    return render(request, 'form.html', {'form': appForm})
+            return HttpResponseRedirect(reverse('overtime'))
+    return render(request, 'overtime/form.html', {'form': appForm})
 
 def edit(request, id):
     edit_app = get_object_or_404(Application, id=id)
@@ -38,10 +38,10 @@ def edit(request, id):
         appForm = ApplicationForm(request.POST, instance=edit_app)
         if appForm.is_valid():
             appForm.save()
-            return HttpResponseRedirect(reverse('ot_idx'))
-    return render(request, 'form.html', {'form':appForm})
+            return HttpResponseRedirect(reverse('overtime'))
+    return render(request, 'overtime/form.html', {'form':appForm})
 
 def delete(request, id):
     del_app = get_object_or_404(Application, id=id)
     del_app.delete()
-    return HttpResponseRedirect(reverse('ot_idx'))
+    return HttpResponseRedirect(reverse('overtime/overtime'))
