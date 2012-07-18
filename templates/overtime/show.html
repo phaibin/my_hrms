@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}加班详情{% endblock %}
+
+{% block content %} 
+        <div class="box post">
+            <h2>{{ app.subject }}</h2>
+
+<p>
+  <label for="id_subject">Subject:</label> {{ app.subject }}
+</p>
+<p>
+  <label for="id_startTime">StartTime:</label> {{ app.start_time }}
+</p>
+<p>
+  <label for="id_endTime">EndTime:</label> {{ app.subject }}
+</p>
+<p>
+  <label for="id_applicationDate">ApplicationDate:</label> {{ app.subject }}
+</p>
+<p>
+  <label for="id_applicant">Applicant:</label> {{ app.subject }}
+</p>
+<p>
+  <a href="{% url overtime %}">返回</a>
+</p>
+
+        </div>
+{% endblock %}

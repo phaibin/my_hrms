@@ -21,6 +21,10 @@ def index(request):
     ctx = {}
     ctx['applications'] = Application.objects.all()
     return render(request, 'overtime/index.html', ctx)
+    
+def show(request, id):
+    show_app = get_object_or_404(Application, id=id)
+    return render(request, 'overtime/show.html', {'app': show_app})
 
 def new(request):
     appForm = ApplicationForm()

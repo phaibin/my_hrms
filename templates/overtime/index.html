@@ -1,16 +1,18 @@
 {% extends "base.html" %}
 
+{% block title %}加班系统{% endblock %}
+
 {% block content %} 
         <div class="box">
 
             <div class="box todos">
 
-                <h2 class="box">列表</h2>
-                <a href="{% url new_overtime %}">新增</a>
+                <h2 class="box">加班列表</h2>
+                <a href="{% url new_overtime %}">新增加班申请</a>
                 <ul>
                     {% for app in applications %}
                         <li>
-                            {{app.subject}}
+                            <a href="{% url show_overtime app.id %}">{{app.subject}}</a>
                             <a href="{% url edit_overtime app.id %}">修改</a>,
                             <a href="{% url delete_overtime app.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>
                         </li>

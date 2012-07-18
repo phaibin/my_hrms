@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
+{% block title %}{% if form.instance.id %}修改{% else %}新增{% endif %}{% endblock %}
+
 {% block content %} 
         <div class="box post">
-            <h2>新增/修改</h2>
+            <h2>{% if form.instance.id %}修改{% else %}新增{% endif %}</h2>
             <form action="" method="post">
                 {% csrf_token %}
                 {{form.as_p}}
@@ -10,5 +12,8 @@
                     <input type="submit" class="submit" value="提交" />
                 </p>
             </form>
+            <p>
+              <a href="{% url overtime %}">返回</a>
+            </p>
         </div>
 {% endblock %}
