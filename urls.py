@@ -4,12 +4,13 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.views import login, logout
+from django.views.generic.simple import direct_to_template
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'overtime.views.index', name='idx'),
+    url(r'^$', direct_to_template, {'template':'index.html'}),
     # url(r'^hrms/', include('hrms.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -18,7 +19,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^overtime/', include('overtime.urls')),
-    url(r'^accounts/login/$', login, {'template_name':'login.html'}),
+    url(r'^accounts/login/$', login, {'template_name':'login.html'}, name='login'),
     url(r'^accounts/logout/$', logout),
 )
 

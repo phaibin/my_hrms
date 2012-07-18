@@ -21,11 +21,13 @@ def index(request):
     ctx = {}
     ctx['applications'] = Application.objects.all()
     return render(request, 'overtime/index.html', ctx)
-    
+
+@login_required    
 def show(request, id):
     show_app = get_object_or_404(Application, id=id)
     return render(request, 'overtime/show.html', {'app': show_app})
 
+@login_required
 def new(request):
     appForm = ApplicationForm()
     if request.method == 'POST':
@@ -35,6 +37,7 @@ def new(request):
             return HttpResponseRedirect(reverse('overtime'))
     return render(request, 'overtime/form.html', {'form': appForm})
 
+@login_required
 def edit(request, id):
     edit_app = get_object_or_404(Application, id=id)
     appForm = ApplicationForm(instance=edit_app)
@@ -45,6 +48,7 @@ def edit(request, id):
             return HttpResponseRedirect(reverse('overtime'))
     return render(request, 'overtime/form.html', {'form':appForm})
 
+@login_required
 def delete(request, id):
     del_app = get_object_or_404(Application, id=id)
     del_app.delete()
