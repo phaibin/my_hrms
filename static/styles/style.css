@@ -24,27 +24,30 @@ a:hover { color:#FF3300; }
 
 .page { width:700px; margin:10px auto; background:#FFF; padding:10px 20px; border:1px solid #CCC; border-radius:5px; }
 
-    .header { padding-top:10px; border-bottom:1px solid #CCC; }
-        .header h1 { font-size:50px; }
-        .header a { color:#333; text-decoration:none; }
+.header { padding-top:10px; border-bottom:1px solid #CCC; }
+.header h1 { font-size:50px; }
+.header a { color:#333; text-decoration:none; }
 
-    .main {  }
-        .main_content { }
+.nav { text-align: right; }
+.nav a { color:#3366CC; text-decoration:underline; }
 
-			.box h2 { padding-bottom:5px; margin-bottom:10px; font-weight:400; color:green; font-size:28px;}
+.main {  }
+.main_content { }
 
-            .todos {}
-                .todos ul li { list-style-type:none; margin-bottom:10px; padding-bottom:10px; border-bottom:1px dotted #CCC; }
-                .todos ul li.finished { color:#666; }
-                .todos ul li a { color:#666; }
-                .todos ul li del { padding-left:15px; background:url(images/ok.gif) no-repeat left center; }
+.box h2 { padding-bottom:5px; margin-bottom:10px; font-weight:400; color:green; font-size:28px;}
 
-            .post {  }
-                .post p { margin-bottom:10px; }
-                .post .submit { line-height:normal; -padding:0; }
+.todos {}
+  .todos ul li { list-style-type:none; margin-bottom:10px; padding-bottom:10px; border-bottom:1px dotted #CCC; }
+  .todos ul li.finished { color:#666; }
+  .todos ul li a { color:#666; }
+  .todos ul li del { padding-left:15px; background:url(images/ok.gif) no-repeat left center; }
+
+  .post {  }
+  .post p { margin-bottom:10px; }
+  .post .submit { line-height:normal; -padding:0; }
 
 
 
-    .foot { border-top:1px solid #CCC; color:#666; padding-top:10px; font-size:11px; }
-        .foot img { vertical-align:top; }
-#id_title { width:98%; }
+  .foot { border-top:1px solid #CCC; color:#666; padding-top:10px; font-size:11px; }
+  .foot img { vertical-align:top; }
+  #id_title { width:98%; }

@@ -7,19 +7,19 @@
             <h2>{{ app.subject }}</h2>
 
 <p>
-  <label for="id_subject">Subject:</label> {{ app.subject }}
+  主题: {{ app.subject }}
 </p>
 <p>
-  <label for="id_startTime">StartTime:</label> {{ app.start_time }}
+  开始时间: {{ app.start_time|date:"Y-m-d H:i:s" }}
 </p>
 <p>
-  <label for="id_endTime">EndTime:</label> {{ app.subject }}
+  结束时间: {{ app.end_time }}
 </p>
 <p>
-  <label for="id_applicationDate">ApplicationDate:</label> {{ app.subject }}
+  申请日期: {{ app.application_date }}
 </p>
 <p>
-  <label for="id_applicant">Applicant:</label> {{ app.subject }}
+  参加人员: {{ app.participants_string }}
 </p>
 <p>
   <a href="{% url overtime %}">返回</a>

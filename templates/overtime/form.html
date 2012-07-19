@@ -4,7 +4,7 @@
 
 {% block content %} 
         <div class="box post">
-            <h2>{% if form.instance.id %}修改{% else %}新增{% endif %}</h2>
+            <h2>{% if form.instance.id %}修改{% else %}新增加班{% endif %}</h2>
             <form action="" method="post">
                 {% csrf_token %}
                 {{form.as_p}}

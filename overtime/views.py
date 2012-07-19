@@ -5,16 +5,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
 
-from models import Application, Person
+from models import Application
 
 class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
-
-class PersonForm(forms.ModelForm):
-    class Meta:
-        model = Person
 
 @login_required
 def index(request):

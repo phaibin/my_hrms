@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^overtime/', include('overtime.urls')),
     url(r'^accounts/login/$', login, {'template_name':'login.html'}, name='login'),
-    url(r'^accounts/logout/$', logout),
+    url(r'^accounts/logout/$', logout, {'next_page':'/'}, name='logout'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

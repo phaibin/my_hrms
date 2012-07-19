@@ -1,0 +1,33 @@
+- model: overtime.applicationstate
+  pk: 1
+  fields:
+    state: ReadyForManagerApprove
+- model: overtime.applicationstate
+  pk: 2
+  fields:
+    state: ReadyForDirectorApprove
+- model: overtime.applicationstate
+  pk: 3
+  fields:
+    state: RejectByDirector
+- model: overtime.applicationstate
+  pk: 4
+  fields:
+    state: Approved
+- model: overtime.applicationstate
+  pk: 5
+  fields:
+    state: Closed
+    
+- model: overtime.application
+  pk: 1
+  fields:
+    subject: Python
+    start_time: 2012-07-19 21:00:00
+    end_time: 2012-07-19 23:00:00
+    application_date: 2012-07-19 17:00:00
+    participants: [1]
+    state: 1
+
+
+

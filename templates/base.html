@@ -11,7 +11,14 @@
 <div class="page">
     <div class="header box">
         <h1><a href="/">首页</a></h1>
-        <a href='{% url login %}'>登录</a>
+        <div class="nav">
+        {% if request.user.is_authenticated %}
+          欢迎：{{ request.user }} | <a href='{% url logout %}'>退出</a>
+        {% else %}
+          <a href='{% url login %}'>登录</a>
+        {% endif %}
+          | <a href="/admin">我是管理员</a>
+        </div>
     </div>
 
     <div class="main box">
@@ -20,7 +27,7 @@
         {% endblock %}
 
     <div class="foot">
-        <a href="http://djangoproject.com/">Django</a>
+        powdered by <a href="http://www.djangoproject.com/">Django</a>
     </div>
 
 </div>
