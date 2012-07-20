@@ -1,23 +1,28 @@
 - model: overtime.applicationstate
   pk: 1
   fields:
-    state: ReadyForManagerApprove
+    code: ReadyForManagerApprove
+    name: 等待项目经理批准
 - model: overtime.applicationstate
   pk: 2
   fields:
-    state: ReadyForDirectorApprove
+    code: ReadyForDirectorApprove
+    name: 等待部门主管批准
 - model: overtime.applicationstate
   pk: 3
   fields:
-    state: RejectByDirector
+    code: RejectByDirector
+    name: 被拒绝
 - model: overtime.applicationstate
   pk: 4
   fields:
-    state: Approved
+    code: Approved
+    name: 通过
 - model: overtime.applicationstate
   pk: 5
   fields:
-    state: Closed
+    code: Closed
+    name: 已结束
     
 - model: overtime.application
   pk: 1
@@ -27,7 +32,7 @@
     end_time: 2012-07-19 23:00:00
     application_date: 2012-07-19 17:00:00
     participants: [1]
-    state: 1
+    state: 2
 
 
 

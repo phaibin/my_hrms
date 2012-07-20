@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from models import Application
+from models import Application, ApplicationState
 
 class ApplicationForm(forms.ModelForm):
     class Meta:
@@ -29,6 +29,8 @@ def new(request):
     appForm = ApplicationForm()
     if request.method == 'POST':
         appForm = ApplicationForm(request.POST)
+        new_app_state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
+        appForm.instance.state = new_app_state
         if appForm.is_valid():
             appForm.save()
             return HttpResponseRedirect(reverse('overtime'))
