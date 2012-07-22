@@ -20,6 +20,7 @@ class Profile(object):
     __metaclass__ = ProfileBase  
   
 class MyProfile(Profile):  
+    # city = models.CharField(max_length = 30, blank = True)
     pass
 
 class ApplicationState(models.Model):

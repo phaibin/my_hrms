@@ -15,7 +15,7 @@
         {% if request.user.is_authenticated %}
           欢迎：{{ request.user }} | <a href='{% url logout %}'>退出</a>
         {% else %}
-          <a href='{% url login %}'>登录</a>
+          <a href='{% url login %}?next={{ request.path }}'>登录</a>
         {% endif %}
           | <a href="/admin">我是管理员</a>
         </div>
