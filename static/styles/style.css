@@ -37,6 +37,7 @@ a:hover { color:#FF3300; }
 .box h2 { padding-bottom:5px; margin-bottom:10px; font-weight:400; color:green; font-size:28px;}
 
 .todos {}
+  .todos div.action { text-align: right; }
   .todos ul li { list-style-type:none; margin-bottom:10px; padding-bottom:10px; border-bottom:1px dotted #CCC; }
   .todos ul li.finished { color:#666; }
   .todos ul li a { color:#666; }

@@ -13,9 +13,12 @@
             {% for app in applications %}
                 <li>
                     <a href="{% url show_overtime app.id %}">{{app.subject}}</a>
-                    <div>
-                    <a href="{% url edit_overtime app.id %}">修改</a>,
-                    <a href="{% url delete_overtime app.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>
+                    <div class="action">
+                      <a href="{% url edit_overtime app.id %}">修改</a>,
+                      <a href="{% url approve_overtime app.id %}">通过</a>,
+                      <a href="{% url reject_overtime app.id %}">拒绝</a>,
+                      <a href="{% url apply_overtime app.id %}">申请</a>,
+                      <a href="{% url delete_overtime app.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>
                     </div>
                 </li>
             {% endfor %}

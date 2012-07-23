@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 # Django settings for hrms project.
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -143,3 +146,5 @@ LOGGING = {
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
+
+AUTH_PROFILE_MODULE = 'overtime.UserProfile'
