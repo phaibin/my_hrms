@@ -13,4 +13,5 @@ urlpatterns = patterns('',
     url(r'^(?P<id>\d+)/approve/$', 'overtime.views.approve', name='approve_overtime'),
     url(r'^(?P<id>\d+)/reject/$', 'overtime.views.reject', name='reject_overtime'),
     url(r'^(?P<id>\d+)/apply/$', 'overtime.views.apply', name='apply_overtime'),
+    url(r'^(?P<id>\d+)/revoke/$', 'overtime.views.revoke', name='revoke_overtime'),
 )

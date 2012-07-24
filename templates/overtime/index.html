@@ -8,17 +8,18 @@
     <div class="box todos">
 
         <h2 class="box">加班列表</h2>
-        <a href="{% url new_overtime %}">新增加班申请</a>
+        {% if "overtime.add_application" in request.user.get_group_permissions %}<a href="{% url new_overtime %}">新增加班申请</a>{% endif %}
         <ul>
-            {% for app in applications %}
+            {% for flow in application_flows %}
                 <li>
-                    <a href="{% url show_overtime app.id %}">{{app.subject}}</a>
+                    <a href="{% url show_overtime flow.application.id %}">{{ flow.application.subject }}</a>
                     <div class="action">
-                      <a href="{% url edit_overtime app.id %}">修改</a>,
-                      <a href="{% url approve_overtime app.id %}">通过</a>,
-                      <a href="{% url reject_overtime app.id %}">拒绝</a>,
-                      <a href="{% url apply_overtime app.id %}">申请</a>,
-                      <a href="{% url delete_overtime app.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>
+                      {% if flow.can_update %}<a href="{% url edit_overtime flow.application.id %}">修改</a>{% endif %}
+                      {% if flow.can_approve %}<a href="{% url approve_overtime flow.application.id %}">通过</a>{% endif %}
+                      {% if flow.can_reject %}<a href="{% url reject_overtime flow.application.id %}">拒绝</a>{% endif %}
+                      {% if flow.can_apply %}<a href="{% url apply_overtime flow.application.id %}">提交</a>{% endif %}
+                      {% if flow.can_revoke %}<a href="{% url revoke_overtime flow.application.id %}">撤销</a>{% endif %}
+                      {% if flow.can_delete %}<a href="{% url delete_overtime flow.application.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>{% endif %}
                     </div>
                 </li>
             {% endfor %}

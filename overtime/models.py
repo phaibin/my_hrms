@@ -11,7 +11,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
 
     # Other fields here
-    superior = models.ForeignKey(User, null=True, related_name='subordinates')
+    superior = models.ForeignKey(User, null=True, related_name='subordinates')        
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -44,7 +44,6 @@ class Application(models.Model):
     def state_string(self):
         return ', '.join([person.username for person in self.participants.all()])
         
-    @property
     def applicationflow_by_user(self, user):
         return self.applicationflow_set.filter(applicant=user)[0]
         
@@ -56,8 +55,13 @@ class Application(models.Model):
         pass
         
     def apply(self, user):
-        pass
-
+         pass
+         
+    def revoke(self, user):
+         flow = self.applicationflow_by_user(user)
+         flow.set_revoke_state()
+         flow.save()
+ 
     def __unicode__(self):
         return self.subject
         
@@ -66,39 +70,51 @@ class ApplicationFlow(models.Model):
     applicant = models.ForeignKey(User)
     parent = models.ForeignKey('self', null=True)
     #permissions
-    read = models.BooleanField()
-    update = models.BooleanField()
-    delete = models.BooleanField()
-    apply = models.BooleanField()
-    reject = models.BooleanField()
-    approve = models.BooleanField()
+    can_read = models.BooleanField()    # 列表
+    can_update = models.BooleanField()  # 修改
+    can_delete = models.BooleanField()  # 删除
+    can_apply = models.BooleanField()   # 提交
+    can_revoke = models.BooleanField() # 撤销
+    can_reject = models.BooleanField()  # 拒绝
+    can_approve = models.BooleanField() # 通过
     
     # 申请人    
     def set_applicant_state(self):
-        self.read = True
-        self.update = False
-        self.delete = True
-        self.apply = False
-        self.reject = False
-        self.approve = False
+        self.reset_state()
+        self.can_read = True
+        self.can_revoke = True
+        
+    # 申请人撤销
+    def set_revoke_state(self):
+        self.reset_state()
+        self.can_update = True
+        self.can_delete = True
+        self.can_apply = True
+    
+    # 参加人
+    def set_viewer_state(self):
+        self.reset_state()
+        self.can_read = True
      
     # 批准过的人
     def set_hidden_state(self):
-        self.read = False
-        self.update = False
-        self.delete = False
-        self.apply = False
-        self.reject = False
-        self.approve = False
+        self.reset_state()
 
     # 审核人
     def set_reviewer_state(self):
-        self.read = True
-        self.update = False
-        self.delete = False
-        self.apply = False
-        self.reject = True
-        self.approve = True
+        self.reset_state()
+        self.can_read = True
+        self.can_reject = True
+        self.can_approve = True
+        
+    def reset_state(self):
+        self.can_read = False
+        self.can_update = False
+        self.can_delete = False
+        self.can_apply = False
+        self.can_revoke = False
+        self.can_reject = False
+        self.can_approve = False
         
 class ApplicationHistory(models.Model):
     application = models.ForeignKey(Application)
