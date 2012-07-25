@@ -90,7 +90,7 @@
 - model: overtime.applicationstate
   pk: 3
   fields:
-    code: RejectByDirector
+    code: Reject
     name: 被拒绝
 - model: overtime.applicationstate
   pk: 4
@@ -100,8 +100,8 @@
 - model: overtime.applicationstate
   pk: 5
   fields:
-    code: Closed
-    name: 已结束
+    code: Revoke
+    name: 撤销
     
 # application
 # - model: overtime.application

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from models import Application, ApplicationState, ApplicationFlow
 
 class ApplicationForm(forms.ModelForm):
-    subject = forms.CharField(label=u'标题')
+    subject = forms.CharField(widget=forms.TextInput(), label=u'标题')
     start_time = forms.CharField(label=u'开始时间')
     end_time = forms.CharField(label=u'结束时间')
     participants = forms.ModelMultipleChoiceField(label=u'参加人员', queryset=User.objects.all())
@@ -39,32 +39,10 @@ def new(request):
     appForm = ApplicationForm()
     if request.method == 'POST':
         appForm = ApplicationForm(request.POST)
-        new_app_state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
         app = appForm.instance
-        app.state = new_app_state
-        app.applicant = request.user
         
         if appForm.is_valid():
-            appForm.save()
-            
-            # application flow for current user
-            app_flow = ApplicationFlow()
-            app_flow.application = app
-            app_flow.applicant = app.applicant
-            app_flow.set_applicant_state()
-            app_flow.save()
-            
-            # application flow for participants
-            for user in app.participants.all():
-                app_flow = ApplicationFlow()
-                app_flow.application = app
-                app_flow.applicant = user
-                app_flow.set_viewer_state()
-                app_flow.save()
-                
-            # application flow for superior
-            
-            
+            app.create(request.user, appForm.cleaned_data)
             return HttpResponseRedirect(reverse('overtime'))
     return render(request, 'overtime/form.html', {'form': appForm})
 
@@ -75,7 +53,8 @@ def edit(request, id):
     if request.method=='POST':
         appForm = ApplicationForm(request.POST, instance=app)
         if appForm.is_valid():
-            appForm.save()
+            new_app = appForm.save(commit=False)
+            new_app.update(appForm.cleaned_data)
             return HttpResponseRedirect(reverse('overtime'))
     return render(request, 'overtime/form.html', {'form':appForm})
 

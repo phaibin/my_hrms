@@ -40,28 +40,121 @@ class Application(models.Model):
     def participants_string(self):
         return ', '.join([person.username for person in self.participants.all()])
         
-    @property
-    def state_string(self):
-        return ', '.join([person.username for person in self.participants.all()])
-        
     def applicationflow_by_user(self, user):
-        return self.applicationflow_set.filter(applicant=user)[0]
+        try:
+            return self.applicationflow_set.get(applicant=user)
+        except:
+            return None
+            
+    def create(self, user, new_app):
+        self.state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
+        self.applicant = user
+        self.save()
+        self.participants = new_app['participants']
         
-    def approve(self, user):
-        current_flow = ApplicationFlow.objects.get(application=self, applicant=user)
-        pass
+        # application flow for current user
+        current_flow = ApplicationFlow()
+        current_flow.application = self
+        current_flow.applicant = self.applicant
+        current_flow.set_applicant_state()
+        current_flow.save()
+
+        # application flow for participants
+        for participant in self.participants.all():
+            app_flow = ApplicationFlow()
+            app_flow.application = self
+            app_flow.applicant = participant
+            app_flow.set_viewer_state()
+            app_flow.save()
+
+        # application flow for superior
+        next_flow = ApplicationFlow()
+        next_flow.application = self
+        next_flow.applicant = user.userprofile.superior
+        next_flow.parent = current_flow
+        next_flow.set_reviewer_state()
+        next_flow.save()
         
-    def reject(self, user):
-        pass
+    def update(self, new_app):
+        """new_app is a dictionary"""
+        # delete application flow for old participants
+        for participant in self.participants.all():
+            app_flow = self.applicationflow_by_user(participant)
+            if app_flow is not None:
+                app_flow.delete()
+          
+        self.participants = new_app['participants']
+        
+        # create application flow for new participants
+        for participant in self.participants.all():
+            app_flow = ApplicationFlow()
+            app_flow.application = self
+            app_flow.applicant = participant
+            app_flow.set_viewer_state()
+            app_flow.save() 
+        
+        self.save() 
+        
+    def revoke(self, user):
+        self.state = ApplicationState.objects.get(code='Revoke')
+        self.save()
+        
+        flow = self.applicationflow_by_user(user)
+        flow.set_revoke_state()
+        flow.save()
+
+        flow = self.applicationflow_by_user(user.userprofile.superior)
+        flow.delete()
         
     def apply(self, user):
-         pass
-         
-    def revoke(self, user):
-         flow = self.applicationflow_by_user(user)
-         flow.set_revoke_state()
-         flow.save()
- 
+        self.state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
+        self.save()
+        
+        current_flow = self.applicationflow_by_user(user)
+        current_flow.set_applicant_state()
+        current_flow.save()
+
+        next_flow = ApplicationFlow()
+        next_flow.application = self
+        next_flow.applicant = user.userprofile.superior
+        next_flow.parent = current_flow
+        next_flow.set_reviewer_state()
+        next_flow.save()
+
+    def reject(self, user):
+        self.state = ApplicationState.objects.get(code='Reject')
+        self.save()
+        
+        flow = self.applicationflow_by_user(user)
+        # change parent flow state
+        parent_flow = flow.parent
+        parent_flow.set_revoke_state()
+        parent_flow.save()
+        # delete current flow
+        flow.delete()
+        
+    def approve(self, user):
+        self.state = ApplicationState.objects.get(code='Approved')
+        self.save()
+        
+        applicant_flow = self.applicationflow_by_user(self.applicant)
+        applicant_flow.set_hidden_state()
+        applicant_flow.save()
+        
+        current_flow = self.applicationflow_by_user(user)
+        if user.userprofile.superior is None:
+            current_flow.delete()
+        else:
+            current_flow.set_hidden_state()
+            current_flow.save()
+
+            next_flow = ApplicationFlow()
+            next_flow.application = self
+            next_flow.applicant = user.userprofile.superior
+            next_flow.parent = current_flow
+            next_flow.set_reviewer_state()
+            next_flow.save()
+    
     def __unicode__(self):
         return self.subject
         
@@ -74,7 +167,7 @@ class ApplicationFlow(models.Model):
     can_update = models.BooleanField()  # 修改
     can_delete = models.BooleanField()  # 删除
     can_apply = models.BooleanField()   # 提交
-    can_revoke = models.BooleanField() # 撤销
+    can_revoke = models.BooleanField()  # 撤销
     can_reject = models.BooleanField()  # 拒绝
     can_approve = models.BooleanField() # 通过
     
