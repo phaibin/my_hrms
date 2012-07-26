@@ -75,6 +75,9 @@ class Application(models.Model):
         next_flow.set_reviewer_state()
         next_flow.save()
         
+        # application history
+        self.write_history(user)
+        
     def update(self, new_app):
         """new_app is a dictionary"""
         # delete application flow for old participants
@@ -93,7 +96,7 @@ class Application(models.Model):
             app_flow.set_viewer_state()
             app_flow.save() 
         
-        self.save() 
+        self.save()
         
     def revoke(self, user):
         self.state = ApplicationState.objects.get(code='Revoke')
@@ -105,6 +108,9 @@ class Application(models.Model):
 
         flow = self.applicationflow_by_user(user.userprofile.superior)
         flow.delete()
+        
+        # application history
+        self.write_history(user)
         
     def apply(self, user):
         self.state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
@@ -120,6 +126,9 @@ class Application(models.Model):
         next_flow.parent = current_flow
         next_flow.set_reviewer_state()
         next_flow.save()
+        
+        # application history
+        self.write_history(user)
 
     def reject(self, user):
         self.state = ApplicationState.objects.get(code='Reject')
@@ -132,6 +141,9 @@ class Application(models.Model):
         parent_flow.save()
         # delete current flow
         flow.delete()
+        
+        # application history
+        self.write_history(user)
         
     def approve(self, user):
         self.state = ApplicationState.objects.get(code='Approved')
@@ -154,6 +166,16 @@ class Application(models.Model):
             next_flow.parent = current_flow
             next_flow.set_reviewer_state()
             next_flow.save()
+            
+        # application history
+        self.write_history(user)
+            
+    def write_history(self, user):
+        history = ApplicationHistory()
+        history.application = self
+        history.modified_by = user
+        history.state = self.state
+        history.save()
     
     def __unicode__(self):
         return self.subject
