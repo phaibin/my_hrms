@@ -10,6 +10,13 @@
         <h2 class="box">加班列表</h2>
         {% if "overtime.add_application" in request.user.get_group_permissions %}<a href="{% url new_overtime %}">新增加班申请</a>{% endif %}
         <ul>
+          {% if is_hr %}
+            {% for app in applications %}
+                <li>
+                    <a href="{% url show_overtime app.id %}">{{ app.subject }}</a>
+                </li>
+            {% endfor %}
+          {% else %}
             {% for flow in application_flows %}
                 <li>
                     <a href="{% url show_overtime flow.application.id %}">{{ flow.application.subject }}</a>
@@ -23,6 +30,7 @@
                     </div>
                 </li>
             {% endfor %}
+          {% endif %}
         </ul>
     </div>
 

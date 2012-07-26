@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from models import Application, ApplicationState, ApplicationFlow
 
@@ -23,10 +23,18 @@ class ApplicationForm(forms.ModelForm):
 
 @login_required
 def index(request):
-    application_flows = request.user.applicationflow_set.all()
+    hrgroup = Group.objects.get(name='人事')
     ctx = {}
-    ctx['application_flows'] = application_flows
-    return render(request, 'overtime/index.html', ctx)
+    if hrgroup in request.user.groups.all():
+        applications = Application.objects.all()
+        ctx['applications'] = applications
+        ctx['is_hr'] = True
+        return render(request, 'overtime/index.html', ctx)
+    else:
+        application_flows = request.user.applicationflow_set.all()
+        ctx['application_flows'] = application_flows
+        ctx['is_hr'] = False
+        return render(request, 'overtime/index.html', ctx)
 
 @login_required    
 def show(request, id):
