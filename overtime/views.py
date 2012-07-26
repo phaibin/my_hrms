@@ -49,41 +49,66 @@ def new(request):
 @login_required
 def edit(request, id):
     app = get_object_or_404(Application, id=id)
-    appForm = ApplicationForm(instance=app)
-    if request.method=='POST':
-        appForm = ApplicationForm(request.POST, instance=app)
-        if appForm.is_valid():
-            new_app = appForm.save(commit=False)
-            new_app.update(appForm.cleaned_data)
-            return HttpResponseRedirect(reverse('overtime'))
-    return render(request, 'overtime/form.html', {'form':appForm})
+    app_flow = app.applicationflow_by_user(request.user)
+    if app_flow is not None and app_flow.can_update:
+        appForm = ApplicationForm(instance=app)
+        if request.method == 'POST':
+            appForm = ApplicationForm(request.POST, instance=app)
+            if appForm.is_valid():
+                new_app = appForm.save(commit=False)
+                new_app.update(appForm.cleaned_data)
+                return HttpResponseRedirect(reverse('overtime'))
+        return render(request, 'overtime/form.html', {'form':appForm})
+    else:
+        return HttpResponseRedirect(reverse('overtime'))
 
 @login_required
 def delete(request, id):
     app = get_object_or_404(Application, id=id)
-    app.delete()
-    return HttpResponseRedirect(reverse('overtime'))
+    app_flow = app.applicationflow_by_user(request.user)
+    if app_flow is not None and app_flow.can_delete:
+        app.delete()
+        return HttpResponseRedirect(reverse('overtime'))
+    else:
+        return HttpResponseRedirect(reverse('overtime'))
     
 @login_required
 def approve(request, id):
     app = get_object_or_404(Application, id=id)
-    app.approve(request.user)
-    return HttpResponseRedirect(reverse('overtime'))
+    app_flow = app.applicationflow_by_user(request.user)
+    if app_flow is not None and app_flow.can_approve:
+        app.approve(request.user)
+        return HttpResponseRedirect(reverse('overtime'))
+    else:
+        print request
+        return HttpResponseRedirect(reverse('overtime'))
 
 @login_required
 def reject(request, id):
     app = get_object_or_404(Application, id=id)
-    app.reject(request.user)
-    return HttpResponseRedirect(reverse('overtime'))
+    app_flow = app.applicationflow_by_user(request.user)
+    if app_flow is not None and app_flow.can_reject:
+        app.reject(request.user)
+        return HttpResponseRedirect(reverse('overtime'))
+    else:
+        return HttpResponseRedirect(reverse('overtime'))
     
 @login_required
 def revoke(request, id):
     app = get_object_or_404(Application, id=id)
-    app.revoke(request.user)
-    return HttpResponseRedirect(reverse('overtime'))
+    app_flow = app.applicationflow_by_user(request.user)
+    if app_flow is not None and app_flow.can_revoke:
+        app.revoke(request.user)
+        return HttpResponseRedirect(reverse('overtime'))
+    else:
+        return HttpResponseRedirect(reverse('overtime'))
 
 @login_required
 def apply(request, id):
     app = get_object_or_404(Application, id=id)
-    app.apply(request.user)
-    return HttpResponseRedirect(reverse('overtime'))
+    app_flow = app.applicationflow_by_user(request.user)
+    if app_flow is not None and app_flow.can_apply:
+        app.apply(request.user)
+        return HttpResponseRedirect(reverse('overtime'))
+    else:
+        return HttpResponseRedirect(reverse('overtime'))
