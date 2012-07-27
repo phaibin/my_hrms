@@ -16,8 +16,9 @@
     <tr><td>状态:</td><td>{{ app.state.name }}</td></tr>
   </table>
   <hr>
-  <div class="box todos">
-    <h3>修改历史</h3>
+  <div>
+    <br>
+    <h3>修改历史</h3><br>
     <table>
       <tr><th>时间</th><th>修改人</th><th>状态</th></tr>
       {% for history in app.applicationhistory_set.all %}
@@ -26,7 +27,7 @@
     </table>
 
   </div>
-  
+  <br>
   <p>
     <a href="{% url overtime %}">返回</a>
   </p>

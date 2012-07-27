@@ -81,11 +81,12 @@ class Application(models.Model):
 
         # application flow for participants
         for participant in self.participants.all():
-            app_flow = ApplicationFlow()
-            app_flow.application = self
-            app_flow.applicant = participant
-            app_flow.set_viewer_state()
-            app_flow.save()
+            if participant != self.applicant:
+                app_flow = ApplicationFlow()
+                app_flow.application = self
+                app_flow.applicant = participant
+                app_flow.set_viewer_state()
+                app_flow.save()
 
         # application flow for superior
         next_flow = ApplicationFlow()
@@ -104,19 +105,24 @@ class Application(models.Model):
         """new_app is a dictionary"""
         # delete application flow for old participants
         for participant in self.participants.all():
-            app_flow = self.applicationflow_by_user(participant)
-            if app_flow is not None:
-                app_flow.delete()
+            if participant != self.applicant:
+                app_flow = self.applicationflow_by_user(participant)
+                if app_flow is not None:
+                    app_flow.delete()
           
-        self.participants = new_app['participants']
+        participants = []
+        for userprofile in new_app['participants']:
+            participants.append(userprofile.user)
+        self.participants = participants
         
         # create application flow for new participants
         for participant in self.participants.all():
-            app_flow = ApplicationFlow()
-            app_flow.application = self
-            app_flow.applicant = participant
-            app_flow.set_viewer_state()
-            app_flow.save() 
+            if participant != self.applicant:
+                app_flow = ApplicationFlow()
+                app_flow.application = self
+                app_flow.applicant = participant
+                app_flow.set_viewer_state()
+                app_flow.save() 
         
         self.save()
         
