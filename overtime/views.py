@@ -8,6 +8,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User, Group
+from django.core.mail import EmailMessage
+from django.template import loader, Context
 
 from models import Application, ApplicationState, ApplicationFlow
 
@@ -23,6 +25,10 @@ class ApplicationForm(forms.ModelForm):
 
 @login_required
 def index(request):
+    print dir(request)
+    print request.__module__
+    print request.__class__
+    print request.build_absolute_uri(reverse('show_overtime', args=[1]))
     hrgroup = Group.objects.get(name='人事')
     ctx = {}
     if hrgroup in request.user.groups.all():
@@ -39,8 +45,7 @@ def index(request):
 @login_required    
 def show(request, id):
     app = get_object_or_404(Application, id=id)
-    current_flow = app.applicationflow_set.filter(applicant=request.user)[0]
-    return render(request, 'overtime/show.html', {'app': app, 'current_flow': current_flow})
+    return render(request, 'overtime/show.html', {'app': app})
 
 @login_required
 def new(request):
@@ -50,7 +55,12 @@ def new(request):
         app = appForm.instance
         
         if appForm.is_valid():
-            app.create(request.user, appForm.cleaned_data)
+            next_user = app.create(request.user, appForm.cleaned_data)
+            
+            # send email
+            subject = '[my_hrms] 新加班申请'        
+            _send_flow_email(request, app, subject, next_user)
+            
             return HttpResponseRedirect(reverse('overtime'))
     return render(request, 'overtime/form.html', {'form': appForm})
 
@@ -64,7 +74,12 @@ def edit(request, id):
             appForm = ApplicationForm(request.POST, instance=app)
             if appForm.is_valid():
                 new_app = appForm.save(commit=False)
-                new_app.update(appForm.cleaned_data)
+                next_user = new_app.update(appForm.cleaned_data)
+                
+                # send email
+                subject = '[my_hrms] 加班更新'        
+                _send_flow_email(request, app, subject, next_user)
+                
                 return HttpResponseRedirect(reverse('overtime'))
         return render(request, 'overtime/form.html', {'form':appForm})
     else:
@@ -76,6 +91,7 @@ def delete(request, id):
     app_flow = app.applicationflow_by_user(request.user)
     if app_flow is not None and app_flow.can_delete:
         app.delete()
+        
         return HttpResponseRedirect(reverse('overtime'))
     else:
         return HttpResponseRedirect(reverse('overtime'))
@@ -85,7 +101,12 @@ def approve(request, id):
     app = get_object_or_404(Application, id=id)
     app_flow = app.applicationflow_by_user(request.user)
     if app_flow is not None and app_flow.can_approve:
-        app.approve(request.user)
+        next_user = app.approve(request.user)
+        
+        # send email
+        subject = '[my_hrms] 加班通过'       
+        _send_flow_email(request, app, subject, next_user)
+        
         return HttpResponseRedirect(reverse('overtime'))
     else:
         print request
@@ -96,7 +117,12 @@ def reject(request, id):
     app = get_object_or_404(Application, id=id)
     app_flow = app.applicationflow_by_user(request.user)
     if app_flow is not None and app_flow.can_reject:
-        app.reject(request.user)
+        next_user = app.reject(request.user)
+        
+        # send email
+        subject = '[my_hrms] 加班拒绝'       
+        _send_flow_email(request, app, subject, next_user)
+        
         return HttpResponseRedirect(reverse('overtime'))
     else:
         return HttpResponseRedirect(reverse('overtime'))
@@ -106,7 +132,12 @@ def revoke(request, id):
     app = get_object_or_404(Application, id=id)
     app_flow = app.applicationflow_by_user(request.user)
     if app_flow is not None and app_flow.can_revoke:
-        app.revoke(request.user)
+        next_user = app.revoke(request.user)
+        
+        # send email
+        subject = '[my_hrms] 加班撤销'      
+        _send_flow_email(request, app, subject, next_user)
+        
         return HttpResponseRedirect(reverse('overtime'))
     else:
         return HttpResponseRedirect(reverse('overtime'))
@@ -116,7 +147,30 @@ def apply(request, id):
     app = get_object_or_404(Application, id=id)
     app_flow = app.applicationflow_by_user(request.user)
     if app_flow is not None and app_flow.can_apply:
-        app.apply(request.user)
+        next_user = app.apply(request.user)
+        
+        # send email
+        subject = '[my_hrms] 新加班申请'        
+        _send_flow_email(request, app, subject, next_user)
+        
         return HttpResponseRedirect(reverse('overtime'))
     else:
         return HttpResponseRedirect(reverse('overtime'))
+
+def _send_email(subject, mail_from, mail_to_list, template, context):
+    msg = EmailMessage(subject, loader.get_template(template).render(Context(context)), mail_from, mail_to_list)
+    msg.content_subtype = 'html'
+    msg.send()
+    
+def _send_flow_email(request, app, subject, next_user):
+    mail_from = 'admin@my_hrms.com'
+    mail_to_list = set([app.applicant.email])
+    for participant in app.participants.all():
+        mail_to_list.add(participant.email)
+    if next_user is not None:
+        mail_to_list.add(next_user.email)
+    if '' in mail_to_list:
+        mail_to_list.remove('')
+    template = 'overtime/email.html'
+    context = {'app': app, 'app_url': request.build_absolute_uri(reverse('show_overtime', args=[app.id]))}
+    _send_email(subject, mail_from, list(mail_to_list), template, context)

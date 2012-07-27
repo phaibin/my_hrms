@@ -148,3 +148,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
 
 AUTH_PROFILE_MODULE = 'overtime.UserProfile'
+
+EMAIL_HOST = 'smtp.telecom-sh.com'
+EMAIL_HOST_USER = 'haibin.peng@jinjiang.com'
+EMAIL_HOST_PASSWORD = '00000'

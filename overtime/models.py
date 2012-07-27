@@ -78,6 +78,8 @@ class Application(models.Model):
         # application history
         self.write_history(user)
         
+        return user.userprofile.superior
+        
     def update(self, new_app):
         """new_app is a dictionary"""
         # delete application flow for old participants
@@ -112,6 +114,8 @@ class Application(models.Model):
         # application history
         self.write_history(user)
         
+        return user.userprofile.superior
+        
     def apply(self, user):
         self.state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
         self.save()
@@ -129,6 +133,8 @@ class Application(models.Model):
         
         # application history
         self.write_history(user)
+        
+        return user.userprofile.superior
 
     def reject(self, user):
         self.state = ApplicationState.objects.get(code='Reject')
@@ -144,6 +150,8 @@ class Application(models.Model):
         
         # application history
         self.write_history(user)
+        
+        return parent_flow.applicant
         
     def approve(self, user):
         self.state = ApplicationState.objects.get(code='Approved')

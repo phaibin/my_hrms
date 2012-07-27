@@ -24,6 +24,7 @@
     username: employee1
     password: pbkdf2_sha256$10000$J6lHq6dcYK9V$j4XTYn6b0s/25s1mr2X/Tr0kYg3MgkACISIbVO3wpyQ=
     groups: [1]
+    email: phaibin@gmail.com
 - model: auth.user
   pk: 3
   fields:
@@ -36,18 +37,21 @@
     username: PM
     password: pbkdf2_sha256$10000$J6lHq6dcYK9V$j4XTYn6b0s/25s1mr2X/Tr0kYg3MgkACISIbVO3wpyQ=
     groups: [3]
+    email: phaibin.ctit@gmail.com
 - model: auth.user
   pk: 5
   fields:
     username: DM
     password: pbkdf2_sha256$10000$J6lHq6dcYK9V$j4XTYn6b0s/25s1mr2X/Tr0kYg3MgkACISIbVO3wpyQ=
     groups: [4]
+    email: haibin.peng@jinjiang.com
 - model: auth.user
   pk: 6
   fields:
     username: HR
     password: pbkdf2_sha256$10000$J6lHq6dcYK9V$j4XTYn6b0s/25s1mr2X/Tr0kYg3MgkACISIbVO3wpyQ=
     groups: [2]
+    email: peng_haibin@vanceinfo.com
     
 # userprofile
 - model: overtime.userprofile
