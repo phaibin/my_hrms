@@ -11,13 +11,13 @@ from django.contrib.auth.models import User, Group
 from django.core.mail import EmailMessage
 from django.template import loader, Context
 
-from models import Application, ApplicationState, ApplicationFlow
+from models import Application, ApplicationState, ApplicationFlow, UserProfile
 
 class ApplicationForm(forms.ModelForm):
     subject = forms.CharField(widget=forms.TextInput(), label=u'标题')
     start_time = forms.CharField(label=u'开始时间')
     end_time = forms.CharField(label=u'结束时间')
-    participants = forms.ModelMultipleChoiceField(label=u'参加人员', queryset=User.objects.all())
+    participants = forms.ModelMultipleChoiceField(label=u'参加人员', queryset=UserProfile.objects.userprofile_in_employee_and_PM())
     content = forms.CharField(label=u'备注', widget=forms.Textarea())
     class Meta:
         model = Application
@@ -25,10 +25,6 @@ class ApplicationForm(forms.ModelForm):
 
 @login_required
 def index(request):
-    print dir(request)
-    print request.__module__
-    print request.__class__
-    print request.build_absolute_uri(reverse('show_overtime', args=[1]))
     hrgroup = Group.objects.get(name='人事')
     ctx = {}
     if hrgroup in request.user.groups.all():
@@ -109,7 +105,6 @@ def approve(request, id):
         
         return HttpResponseRedirect(reverse('overtime'))
     else:
-        print request
         return HttpResponseRedirect(reverse('overtime'))
 
 @login_required

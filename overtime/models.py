@@ -2,17 +2,34 @@
 # -*- coding:utf-8 -*-
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from datetime import datetime
+
+class UserProfileManager(models.Manager):
+    def userprofile_in_employee_and_PM(self):
+        profiles = []
+        group = Group.objects.get(name='员工')
+        for user in group.user_set.all():
+            profiles.append(user.userprofile)
+        group = Group.objects.get(name='项目经理')
+        for user in group.user_set.all():
+            profiles.append(user.userprofile)
+        return UserProfile.objects.filter(id__in=[o.id for o in profiles])
 
 class UserProfile(models.Model):
     # This field is required.
     user = models.OneToOneField(User)
 
     # Other fields here
-    superior = models.ForeignKey(User, null=True, related_name='subordinates')        
-
+    superior = models.ForeignKey(User, null=True, related_name='subordinates')
+    chinese_name = models.CharField(max_length=100)
+    english_name = models.CharField(max_length=100, null=True)
+    objects = UserProfileManager()
+    
+    def __unicode__(self):
+        return self.chinese_name
+    
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
@@ -38,7 +55,7 @@ class Application(models.Model):
 
     @property
     def participants_string(self):
-        return ', '.join([person.username for person in self.participants.all()])
+        return ', '.join([person.userprofile.chinese_name for person in self.participants.all()])
         
     def applicationflow_by_user(self, user):
         try:
@@ -50,7 +67,10 @@ class Application(models.Model):
         self.state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
         self.applicant = user
         self.save()
-        self.participants = new_app['participants']
+        participants = []
+        for userprofile in new_app['participants']:
+            participants.append(userprofile.user)
+        self.participants = participants
         
         # application flow for current user
         current_flow = ApplicationFlow()

@@ -55,31 +55,42 @@
     
 # userprofile
 - model: overtime.userprofile
+  pk: 1
+  fields:
+    user: 1
+    superior: null
+    chinese_name: 管理员
+- model: overtime.userprofile
   pk: 2
   fields:
     user: 2
     superior: 4
+    chinese_name: 程序员A
 - model: overtime.userprofile
   pk: 3
   fields:
     user: 3
     superior: 4
+    chinese_name: 程序员B
 - model: overtime.userprofile
   pk: 4
   fields:
     user: 4
     superior: 5
+    chinese_name: 项目经理A
 - model: overtime.userprofile
   pk: 5
   fields:
     user: 5
     superior: null
+    chinese_name: 部门经理A
 - model: overtime.userprofile
   pk: 6
   fields:
     user: 6
     superior: null
-
+    chinese_name: 人事A
+      
 # applicationstate
 - model: overtime.applicationstate
   pk: 1

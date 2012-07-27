@@ -8,9 +8,9 @@
 
   <table>
     <tr><td>主题:</td><td>{{ app.subject }}</td></tr>
-    <tr><td>开始时间:</td><td>{{ app.start_time|date:"Y-m-d H:i:s" }}</td></tr>
-    <tr><td>结束时间:</td><td>{{ app.end_time }}</td></tr>
-    <tr><td>申请日期:</td><td>{{ app.application_date }}</td></tr>
+    <tr><td>开始时间:</td><td>{{ app.start_time|date:"Y-m-d H:i" }}</td></tr>
+    <tr><td>结束时间:</td><td>{{ app.end_time|date:"Y-m-d H:i" }}</td></tr>
+    <tr><td>申请日期:</td><td>{{ app.application_date|date:"Y-m-d H:i" }}</td></tr>
     <tr><td>参加人员:</td><td>{{ app.participants_string }}</td></tr>
     <tr><td>备注:</td><td>{{ app.content }}</td></tr>
     <tr><td>状态:</td><td>{{ app.state.name }}</td></tr>
@@ -21,7 +21,7 @@
     <table>
       <tr><th>时间</th><th>修改人</th><th>状态</th></tr>
       {% for history in app.applicationhistory_set.all %}
-      <tr><td>{{ history.modified_on }}</td><td>{{ history.modified_by }}</td><td>{{ history.state }}</td></tr>
+      <tr><td>{{ history.modified_on|date:"Y-m-d H:i" }}</td><td>{{ history.modified_by.userprofile.chinese_name }}</td><td>{{ history.state }}</td></tr>
       {% endfor %}
     </table>
 
