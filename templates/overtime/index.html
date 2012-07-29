@@ -3,13 +3,15 @@
 {% block title %}加班系统{% endblock %}
 
 {% block content %} 
-<div class="box">
+<div>
 
     <div class="box todos">
 
-        <h2 class="box">加班列表</h2>
-        {% if "overtime.add_application" in request.user.get_group_permissions %}<a href="{% url new_overtime %}">新增加班申请</a>{% endif %}
-        <ul>
+        <h2>加班列表</h2>
+        <div>{% if "overtime.add_application" in request.user.get_group_permissions %}<a href="{% url new_overtime %}">新增加班申请</a>{% endif %}</div>
+        <hr>
+        <div>
+          <ul>
           {% if is_hr %}
             {% for app in applications %}
                 <li>
@@ -32,7 +34,7 @@
             {% endfor %}
           {% endif %}
         </ul>
-        
+      </div>        
     </div>
 
 </div>

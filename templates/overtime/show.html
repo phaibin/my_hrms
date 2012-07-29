@@ -15,21 +15,20 @@
     <tr><td>备注:</td><td>{{ app.content }}</td></tr>
     <tr><td>状态:</td><td>{{ app.state.name }}</td></tr>
   </table>
-  <hr>
-  <div>
-    <br>
-    <h3>修改历史</h3><br>
-    <table>
-      <tr><th>时间</th><th>修改人</th><th>状态</th></tr>
-      {% for history in app.applicationhistory_set.all %}
-      <tr><td>{{ history.modified_on|date:"Y-m-d H:i" }}</td><td>{{ history.modified_by.userprofile.chinese_name }}</td><td>{{ history.state }}</td></tr>
-      {% endfor %}
-    </table>
+</div>
 
-  </div>
+<div class="box">
   <br>
-  <p>
+  <h2>修改历史</h2>
+  <table>
+    <tr><th>时间</th><th>修改人</th><th>状态</th></tr>
+    {% for history in app.applicationhistory_set.all %}
+    <tr><td>{{ history.modified_on|date:"Y-m-d H:i" }}</td><td>{{ history.modified_by.userprofile.chinese_name }}</td><td>{{ history.state }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="box">
     <a href="{% url overtime %}">返回</a>
-  </p>
 </div>
 {% endblock %}

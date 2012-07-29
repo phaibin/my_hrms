@@ -15,7 +15,7 @@ from models import Application, ApplicationState, ApplicationFlow, UserProfile
 
 class ApplicationForm(forms.ModelForm):
     subject = forms.CharField(widget=forms.TextInput(), label=u'标题')
-    start_time = forms.CharField(label=u'开始时间')
+    start_time = forms.DateTimeField(label=u'开始时间', widget=forms.SplitDateTimeWidget)
     end_time = forms.CharField(label=u'结束时间')
     participants = forms.ModelMultipleChoiceField(label=u'参加人员', queryset=UserProfile.objects.userprofile_in_employee_and_PM())
     content = forms.CharField(label=u'备注', widget=forms.Textarea())
