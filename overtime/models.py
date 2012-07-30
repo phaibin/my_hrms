@@ -48,10 +48,12 @@ class Application(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     application_date = models.DateTimeField(auto_now_add=True)
-    participants = models.ManyToManyField(User, null=True)
+    participants = models.ManyToManyField(User, null=True, related_name='joined_applications')
     state = models.ForeignKey(ApplicationState, editable=False, null=True)
     applicant = models.ForeignKey(User, related_name='applied_applications', editable=False)
     content = models.TextField()
+    modified_by = models.ForeignKey(User, editable=False)
+    modified_on = models.DateTimeField(auto_now=True, editable=False)
 
     @property
     def participants_string(self):
@@ -66,6 +68,7 @@ class Application(models.Model):
     def create(self, user, new_app):
         self.state = ApplicationState.objects.get(code='ReadyForDirectorApprove')
         self.applicant = user
+        self.modified_by = user
         self.save()
         participants = []
         for userprofile in new_app['participants']:
@@ -210,6 +213,8 @@ class Application(models.Model):
         history.modified_by = user
         history.state = self.state
         history.save()
+        self.modified_by = user
+        self.save()
     
     def __unicode__(self):
         return self.subject

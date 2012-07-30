@@ -15,13 +15,14 @@
           {% if is_hr %}
             {% for app in applications %}
                 <li>
-                    <a href="{% url show_overtime app.id %}">{{ app.subject }}</a>
+                    <h3><a href="{% url show_overtime app.id %}">{{ app.subject }}</a></h3>
                 </li>
             {% endfor %}
           {% else %}
             {% for flow in application_flows %}
                 <li>
-                    <a href="{% url show_overtime flow.application.id %}">{{ flow.application.subject }}</a>
+                    <h3><a href="{% url show_overtime flow.application.id %}">{{ flow.application.subject }}</a></h3>
+                    <div class="foot">最后由 • <span class="field">{{ flow.application.modified_by.userprofile.chinese_name }}</span> • 于 • <span class="field">{{ flow.application.modified_on|date:"Y年n月j日 H:i" }}</span> • 修改</div>
                     <div class="action">
                       {% if flow.can_update %}<a href="{% url edit_overtime flow.application.id %}">修改</a>{% endif %}
                       {% if flow.can_approve %}<a href="{% url approve_overtime flow.application.id %}">通过</a>{% endif %}
