@@ -3,21 +3,27 @@
 {% block title %}{% if form.instance.id %}修改加班{% else %}新增加班{% endif %}{% endblock %}
 
 {% block content %} 
-        <div class="box post">
-            <h2>{% if form.instance.id %}修改{% else %}新增加班{% endif %}</h2>
-            <form action="" method="post">
-                {% csrf_token %}
-                <table>
-                {{ form.as_table }}
-                </table>
-                <p>
-                    <input type="submit" class="submit" value="提交" />
-                </p>
-            </form>
-        </div>
-        <div class="box">
-            <p>
-              <a href="{% url overtime %}">返回</a>
-            </p>
-        </div>
+  <div class="box post">
+      <h2>{% if form.instance.id %}修改{% else %}新增加班{% endif %}</h2>
+      <form action="" method="post">
+          {% csrf_token %}
+          <table>
+          {{ form.as_table }}
+          </table>
+          <p>
+              <input type="submit" class="submit" value="提交" />
+          </p>
+      </form>
+  </div>
+  <div class="box">
+      <p>
+        <a href="{% url overtime %}">返回</a>
+      </p>
+  </div>
+  <script type="text/javascript" charset="utf-8">
+    $('#id_start_time').datetimepicker();
+    $('#id_end_time').datetimepicker();
+  </script>
+  
+        
 {% endblock %}
