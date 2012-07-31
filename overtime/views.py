@@ -44,10 +44,10 @@ def index(request, filter='all'):
     if hrgroup in request.user.groups.all():
         # applications = Application.objects.all()
         applications = {
-            'all': Application.objects.all(),
-            'new': Application.objects.filter(state__in=[revoke_state, reject_state]),
-            'applying': Application.objects.exclude(state__in=[revoke_state, reject_state, approved_state]),
-            'approved': Application.objects.filter(state=approved_state)
+            'all': Application.objects.all().order_by('-modified_on'),
+            'new': Application.objects.filter(state__in=[revoke_state, reject_state]).order_by('-modified_on'),
+            'applying': Application.objects.exclude(state__in=[revoke_state, reject_state, approved_state]).order_by('-modified_on'),
+            'approved': Application.objects.filter(state=approved_state).order_by('-modified_on'),
         }[filter]
         ctx['applications'] = applications
         ctx['is_hr'] = True
@@ -56,10 +56,10 @@ def index(request, filter='all'):
     else:
         # application_flows = request.user.applicationflow_set.all()
         application_flows = {
-            'all': request.user.applicationflow_set.all(),
-            'new': request.user.applicationflow_set.filter(application__state__in=[revoke_state, reject_state]),
-            'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]),
-            'approved': request.user.applicationflow_set.filter(application__state=approved_state)
+            'all': request.user.applicationflow_set.all().order_by('-application__modified_on'),
+            'new': request.user.applicationflow_set.filter(application__state__in=[revoke_state, reject_state]).order_by('-application__modified_on'),
+            'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]).order_by('-application__modified_on'),
+            'approved': request.user.applicationflow_set.filter(application__state=approved_state).order_by('-application__modified_on'),
         }[filter]
         ctx['application_flows'] = application_flows
         ctx['is_hr'] = False
