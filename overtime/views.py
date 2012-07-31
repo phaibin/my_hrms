@@ -61,7 +61,6 @@ def index(request, filter='all'):
             'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]),
             'approved': request.user.applicationflow_set.filter(application__state=approved_state)
         }[filter]
-        print application_flows
         ctx['application_flows'] = application_flows
         ctx['is_hr'] = False
         ctx['filter'] = filter
