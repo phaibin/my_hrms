@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User, Group
 from django.core.mail import EmailMessage
 from django.template import loader, Context
+from django.conf import settings
 
 from models import Application, ApplicationState, ApplicationFlow, UserProfile
 
@@ -32,19 +33,55 @@ class ApplicationForm(forms.ModelForm):
         fields  = ['subject', 'start_time', 'end_time', 'participants', 'content']
 
 @login_required
-def index(request):
+def index(request, filter='all'):
     hrgroup = Group.objects.get(name='人事')
     ctx = {}
+    # not applyed
+    revoke_state = ApplicationState.objects.get(code='Revoke')
+    reject_state = ApplicationState.objects.get(code='Reject')
+    # approved
+    approved_state = ApplicationState.objects.get(code='Approved')
     if hrgroup in request.user.groups.all():
-        applications = Application.objects.all()
+        # applications = Application.objects.all()
+        applications = {
+            'all': Application.objects.all(),
+            'new': Application.objects.filter(state__in=[revoke_state, reject_state]),
+            'applying': Application.objects.exclude(state__in=[revoke_state, reject_state, approved_state]),
+            'approved': Application.objects.filter(state=approved_state)
+        }[filter]
         ctx['applications'] = applications
         ctx['is_hr'] = True
+        ctx['filter'] = filter
         return render(request, 'overtime/index.html', ctx)
     else:
-        application_flows = request.user.applicationflow_set.all()
+        # application_flows = request.user.applicationflow_set.all()
+        application_flows = {
+            'all': request.user.applicationflow_set.all(),
+            'new': request.user.applicationflow_set.filter(application__state__in=[revoke_state, reject_state]),
+            'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]),
+            'approved': request.user.applicationflow_set.filter(application__state=approved_state)
+        }[filter]
+        print application_flows
         ctx['application_flows'] = application_flows
         ctx['is_hr'] = False
+        ctx['filter'] = filter
         return render(request, 'overtime/index.html', ctx)
+
+@login_required
+def filter_all(request):
+    return index(request)
+
+@login_required
+def filter_new(request):
+    return index(request, 'new')
+
+@login_required
+def filter_applying(request):
+    return index(request, 'applying')
+
+@login_required
+def filter_approved(request):
+    return index(request, 'approved')
 
 @login_required    
 def show(request, id):
@@ -161,9 +198,10 @@ def apply(request, id):
         return HttpResponseRedirect(reverse('overtime'))
 
 def _send_email(subject, mail_from, mail_to_list, template, context):
-    msg = EmailMessage(subject, loader.get_template(template).render(Context(context)), mail_from, mail_to_list)
-    msg.content_subtype = 'html'
-    msg.send()
+    if settings.SENDING_EMAIL:
+        msg = EmailMessage(subject, loader.get_template(template).render(Context(context)), mail_from, mail_to_list)
+        msg.content_subtype = 'html'
+        msg.send()
     
 def _send_flow_email(request, app, subject, next_user):
     mail_from = 'admin@my_hrms.com'

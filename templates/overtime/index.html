@@ -5,38 +5,51 @@
 {% block content %} 
 <div>
 
-    <div class="box todos">
-
+    <div class="box">
+      <div class="clear">
+        <div class="float_right" id="new_app">{% if "overtime.add_application" in request.user.get_group_permissions %}<a class="linkbutton" href="{% url new_overtime %}">新增加班申请</a>{% endif %}</div>
         <h2>加班列表</h2>
-        <div>{% if "overtime.add_application" in request.user.get_group_permissions %}<a href="{% url new_overtime %}">新增加班申请</a>{% endif %}</div>
-        <hr>
-        <div>
+      </div>
+      {% if "overtime.filter_application" in request.user.get_group_permissions %}
+      <div id="app_filter">
+        <div class="menu">
           <ul>
-          {% if is_hr %}
-            {% for app in applications %}
-                <li>
-                    <h3><a href="{% url show_overtime app.id %}">{{ app.subject }}</a></h3>
-                </li>
-            {% endfor %}
-          {% else %}
-            {% for flow in application_flows %}
-                <li>
-                    <h3><a href="{% url show_overtime flow.application.id %}">{{ flow.application.subject }}</a></h3>
-                    <div class="foot">最后由 • <span class="field">{{ flow.application.modified_by.userprofile.chinese_name }}</span> • 于 • <span class="field">{{ flow.application.modified_on|date:"Y年n月j日 H:i" }}</span> • 修改</div>
-                    <div class="action">
-                      {% if flow.can_update %}<a href="{% url edit_overtime flow.application.id %}">修改</a>{% endif %}
-                      {% if flow.can_approve %}<a href="{% url approve_overtime flow.application.id %}">通过</a>{% endif %}
-                      {% if flow.can_reject %}<a href="{% url reject_overtime flow.application.id %}">拒绝</a>{% endif %}
-                      {% if flow.can_apply %}<a href="{% url apply_overtime flow.application.id %}">提交</a>{% endif %}
-                      {% if flow.can_revoke %}<a href="{% url revoke_overtime flow.application.id %}">撤销</a>{% endif %}
-                      {% if flow.can_delete %}<a href="{% url delete_overtime flow.application.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>{% endif %}
-                    </div>
-                </li>
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </div>        
-    </div>
+            <li><a class="{% ifequal filter 'all' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_all_overtime %}">全部</a></li>
+            <li><a class="{% ifequal filter 'new' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_new_overtime %}">未提交</a></li>
+            <li><a class="{% ifequal filter 'applying' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_applying_overtime %}">申请中</a></li>
+            <li><a class="{% ifequal filter 'approved' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_approved_overtime %}">通过</a></li>
+        </div>
+      </div>
+      {% endif %}
+      <hr class="no-margin">
+      <div class="todos">
+        <ul>
+        {% if is_hr %}
+          {% for app in applications %}
+              <li>
+                  <h3><a href="{% url show_overtime app.id %}">{{ app.subject }}</a></h3>
+                  <div class="foot">最后由 • <span class="field">{{ app.modified_by.userprofile.chinese_name }}</span> • 于 • <span class="field">{{ app.modified_on|date:"Y年n月j日 H:i" }}</span> • 修改</div>
+              </li>
+          {% endfor %}
+        {% else %}
+          {% for flow in application_flows %}
+              <li>
+                  <h3><a href="{% url show_overtime flow.application.id %}">{{ flow.application.subject }}</a></h3>
+                  <div class="foot">最后由 • <span class="field">{{ flow.application.modified_by.userprofile.chinese_name }}</span> • 于 • <span class="field">{{ flow.application.modified_on|date:"Y年n月j日 H:i" }}</span> • 修改</div>
+                  <div class="action">
+                    {% if flow.can_update %}<a class="linkbutton" href="{% url edit_overtime flow.application.id %}">修改</a>{% endif %}
+                    {% if flow.can_approve %}<a class="linkbutton" href="{% url approve_overtime flow.application.id %}">通过</a>{% endif %}
+                    {% if flow.can_reject %}<a class="linkbutton" href="{% url reject_overtime flow.application.id %}">拒绝</a>{% endif %}
+                    {% if flow.can_apply %}<a class="linkbutton" href="{% url apply_overtime flow.application.id %}">提交</a>{% endif %}
+                    {% if flow.can_revoke %}<a class="linkbutton" href="{% url revoke_overtime flow.application.id %}">撤销</a>{% endif %}
+                    {% if flow.can_delete %}<a class="linkbutton" href="{% url delete_overtime flow.application.id %}" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>{% endif %}
+                  </div>
+              </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    </div>        
+  </div>
 
 </div>
 {% endblock %}

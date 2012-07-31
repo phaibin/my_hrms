@@ -6,6 +6,10 @@ from django.conf.urls.defaults import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'overtime.views.index', name='overtime'),
+    url(r'^filter_all/$', 'overtime.views.filter_all', name='filter_all_overtime'),
+    url(r'^filter_new/$', 'overtime.views.filter_new', name='filter_new_overtime'),
+    url(r'^filter_applying/$', 'overtime.views.filter_applying', name='filter_applying_overtime'),
+    url(r'^filter_approved/$', 'overtime.views.filter_approved', name='filter_approved_overtime'),
     url(r'^(?P<id>\d+)/$', 'overtime.views.show', name='show_overtime'),
     url(r'^new/$', 'overtime.views.new', name='new_overtime'),
     url(r'^(?P<id>\d+)/edit/$', 'overtime.views.edit', name='edit_overtime'),

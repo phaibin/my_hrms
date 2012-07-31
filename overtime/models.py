@@ -270,6 +270,9 @@ class ApplicationFlow(models.Model):
         self.can_reject = False
         self.can_approve = False
         
+    def __unicode__(self):
+        return str(self.id)
+        
 class ApplicationHistory(models.Model):
     application = models.ForeignKey(Application)
     modified_by = models.ForeignKey(User)
