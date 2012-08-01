@@ -12,13 +12,12 @@
       </div>
       {% if "overtime.filter_application" in request.user.get_group_permissions %}
       <div id="app_filter">
-        <div class="menu">
-          <ul>
-            <li><a class="{% ifequal filter 'all' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_all_overtime %}">全部</a></li>
-            <li><a class="{% ifequal filter 'new' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_new_overtime %}">未提交</a></li>
-            <li><a class="{% ifequal filter 'applying' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_applying_overtime %}">申请中</a></li>
-            <li><a class="{% ifequal filter 'approved' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_approved_overtime %}">通过</a></li>
-        </div>
+        <ul>
+          <li><a class="{% ifequal filter 'all' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_all_overtime %}">全部</a></li>
+          <li><a class="{% ifequal filter 'new' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_new_overtime %}">未提交</a></li>
+          <li><a class="{% ifequal filter 'applying' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_applying_overtime %}">申请中</a></li>
+          <li><a class="{% ifequal filter 'approved' %}filterbutton-selected{% else %}filterbutton{% endifequal %}" href="{% url filter_approved_overtime %}">通过</a></li>
+        </ul>
       </div>
       {% endif %}
       <hr class="no-margin">
