@@ -96,6 +96,8 @@ span.roundblock_Reject, span.roundblock_Revoke {
 #app_filter ul { display:block; list-style:none; }
 #app_filter ul li { display:line; float:left; margin:0px 10px 0 0; }
 
+#date_filter { font-weight:bold; color:#447099; cursor:pointer; }
+
 hr.no-margin { margin:1px 0 15px 0; }
 
 .main {  }
@@ -125,6 +127,10 @@ table td { padding:1px 5px 1px 5px; }
 .foot img { vertical-align:top; }
 #id_title { width:98%; }
 
-#app_title { height:30px; line-height:30px}
+#app-list-title { height:60px; line-height:60px; }
+
+#app_title { height:30px; line-height:30px; }
 #app_title h3 { display:inline; vertical-align:middle; }
 #app_state { vertical-align:middle; }
+
+#dialog-date-filter { display:none; }

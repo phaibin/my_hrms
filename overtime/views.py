@@ -86,6 +86,12 @@ def filter_applying(request):
 def filter_approved(request):
     return index(request, 'approved')
 
+@login_required
+def filter_date(request):
+    request.session['date_from'] = request.GET.get('date_from', '')
+    request.session['date_to'] = request.GET.get('date_to', '')
+    return HttpResponseRedirect(reverse('overtime'))
+
 @login_required    
 def show(request, id):
     app = get_object_or_404(Application, id=id)

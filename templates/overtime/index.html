@@ -3,11 +3,10 @@
 {% block title %}加班系统{% endblock %}
 
 {% block content %} 
-<div>
-
     <div class="box">
-      <div class="clear">
-        <div class="float_right" id="new_app">{% if "overtime.add_application" in request.user.get_group_permissions %}<a class="linkbutton" href="{% url new_overtime %}">新增加班申请</a>{% endif %}</div>
+      <div id="new_app">{% if "overtime.add_application" in request.user.get_group_permissions %}<a class="linkbutton" href="{% url new_overtime %}">新增加班申请</a>{% endif %}</div>
+      <div id="app-list-title" class="clear">
+        <div class="float_right" id="date_filter" onclick="showDatePicker();">时间范围：2012年</div>
         <h2>加班列表</h2>
       </div>
       {% if "overtime.filter_application" in request.user.get_group_permissions %}
@@ -52,7 +51,78 @@
         {% endif %}
       </ul>
     </div>        
-  </div>
+    
 
-</div>
+    	
+    <div id="dialog-date-filter" title="选择时间范围">
+      <form id="date-filter-form" action="{% url filter_date_overtime %}">
+        <p>
+          <select id="quickDateRanges"> 							
+            <option disabled="disabled" value="0">选择预设</option> 							
+            <optgroup class="quick" label="预置日期"> 							
+              <option value="day|0">今天</option>
+              <option value="day|1">昨天</option>
+              <option value="week|0">本周</option>
+              <option value="week|1">上周</option>
+              <option value="month|0">本月</option>
+              <option value="month|1">上月</option>
+              <option value="year|0">今年</option>
+              <option value="year|1">去年</option>
+            </optgroup>
+        	</select>
+      	</p><br>
+        <p>
+          <label for="date_from">从</label>
+          <input type="text" id="date_from" name="date_from"/>
+        </p>
+        <p>
+          <label for="date_to">到</label>
+          <input type="text" id="date_to" name="date_to"/>
+        </p>
+      </form>
+    </div>
+    
+    <script>
+        $( "#date_from" ).datepicker({
+        	defaultDate: "+1w",
+        	changeMonth: true,
+        	numberOfMonths: 3,
+        	dateFormat: "yy-mm-dd",
+        	onSelect: function( selectedDate ) {
+        		$( "#date_to" ).datepicker( "option", "minDate", selectedDate );
+        	}
+        });
+        $( "#date_to" ).datepicker({
+        	defaultDate: "+1w",
+        	changeMonth: true,
+        	numberOfMonths: 3,
+        	dateFormat: "yy-mm-dd",
+        	onSelect: function( selectedDate ) {
+        		$( "#date_from" ).datepicker( "option", "maxDate", selectedDate );
+        	}
+        });
+
+      	function showDatePicker() {
+      		$( "#dialog-date-filter" ).dialog({
+      			resizable: false,
+      			draggable: false,
+      			height:200,
+      			width:300,
+      			modal: true,
+      			dialogClass: "alert",
+      			buttons: {
+      				"确定": function() {
+                $("#date-filter-form").submit();
+      					$( this ).dialog( "close" );
+      				},
+      				"取消": function() {
+      					$( this ).dialog( "close" );
+      				}
+      			},
+            open: function(event, ui) {
+              $("#quickDateRanges").val(0);
+            },
+        	});
+      	}
+    </script>
 {% endblock %}
