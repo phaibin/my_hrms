@@ -32,6 +32,10 @@ class ApplicationForm(forms.ModelForm):
         model = Application
         fields  = ['subject', 'start_time', 'end_time', 'participants', 'content']
 
+def myrender(request, *args, **kwargs):
+    kwargs['current_app'] = 'overtime'
+    return render(request, *args, **kwargs)
+
 @login_required
 def index(request, filter='all'):
     hrgroup = Group.objects.get(name='人事')
@@ -52,7 +56,7 @@ def index(request, filter='all'):
         ctx['applications'] = applications
         ctx['is_hr'] = True
         ctx['filter'] = filter
-        return render(request, 'overtime/index.html', ctx)
+        return myrender(request, 'overtime/index.html', ctx)
     else:
         # application_flows = request.user.applicationflow_set.all()
         application_flows = {
@@ -64,7 +68,7 @@ def index(request, filter='all'):
         ctx['application_flows'] = application_flows
         ctx['is_hr'] = False
         ctx['filter'] = filter
-        return render(request, 'overtime/index.html', ctx)
+        return myrender(request, 'overtime/index.html', ctx)
 
 @login_required
 def filter_all(request):
@@ -85,7 +89,7 @@ def filter_approved(request):
 @login_required    
 def show(request, id):
     app = get_object_or_404(Application, id=id)
-    return render(request, 'overtime/show.html', {'app': app})
+    return myrender(request, 'overtime/show.html', {'app': app})
 
 @login_required
 def new(request):
@@ -102,7 +106,7 @@ def new(request):
             _send_flow_email(request, app, subject, next_user)
             
             return HttpResponseRedirect(reverse('overtime'))
-    return render(request, 'overtime/form.html', {'form': appForm})
+    return myrender(request, 'overtime/form.html', {'form': appForm})
 
 @login_required
 def edit(request, id):
@@ -121,7 +125,7 @@ def edit(request, id):
                 _send_flow_email(request, app, subject, next_user)
                 
                 return HttpResponseRedirect(reverse('overtime'))
-        return render(request, 'overtime/form.html', {'form':appForm})
+        return myrender(request, 'overtime/form.html', {'form':appForm})
     else:
         return HttpResponseRedirect(reverse('overtime'))
 

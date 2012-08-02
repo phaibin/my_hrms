@@ -26,7 +26,8 @@
           </div>
           <div class="menu">
             <ul>
-              <li><a href="{% url overtime %}" class="select">加班系统</a></li>
+              <li><a href="/" class="{% ifequal request.path '/' %}select{% endifequal %}">首页</a></li>
+              <li><a href="{% url overtime %}" class="{% ifequal current_app 'overtime' %}select{% endifequal %}">加班系统</a></li>
               <li><a href="">请假系统</a></li>
           </div>
         </div>
