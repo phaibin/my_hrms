@@ -6,7 +6,9 @@
     <div class="box">
       <div id="new_app">{% if "overtime.add_application" in request.user.get_group_permissions %}<a class="linkbutton" href="{% url new_overtime %}">新增加班申请</a>{% endif %}</div>
       <div id="app-list-title" class="clear">
-        <div class="float_right" id="date_filter" onclick="showDatePicker();">时间范围：2012年</div>
+        <div class="float_right">
+          <span id="date_filter" onclick="showDatePicker();">时间范围：2012年</span>
+        </div>
         <h2>加班列表</h2>
       </div>
       {% if "overtime.filter_application" in request.user.get_group_permissions %}

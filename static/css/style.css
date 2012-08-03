@@ -96,7 +96,7 @@ span.roundblock_Reject, span.roundblock_Revoke {
 #app_filter ul { display:block; list-style:none; }
 #app_filter ul li { display:line; float:left; margin:0px 10px 0 0; }
 
-#date_filter { font-weight:bold; color:#447099; cursor:pointer; }
+#date_filter { font-weight:bold; color:#447099; cursor:pointer; padding-right:20px; background:url(/static/images/calendar.png) no-repeat right; }
 
 hr.no-margin { margin:1px 0 15px 0; }
 

@@ -11,7 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.core.mail import EmailMessage
 from django.template import loader, Context
 from django.conf import settings
-
+import datetime
 from models import Application, ApplicationState, ApplicationFlow, UserProfile
 
 char_field_errors = {
@@ -45,26 +45,38 @@ def index(request, filter='all'):
     reject_state = ApplicationState.objects.get(code='Reject')
     # approved
     approved_state = ApplicationState.objects.get(code='Approved')
+    
+    start_date = request.session.get('date_from', '')
+    if start_date is None or start_date=='':
+        start_date = datetime.date(datetime.datetime.now().year, 1, 1)
+    end_date = request.session.get('date_to', '')
+    if end_date is None or end_date=='':
+        end_date = datetime.datetime.now()
+    
+    print start_date
+    print end_date
+        
     if hrgroup in request.user.groups.all():
         # applications = Application.objects.all()
         applications = {
-            'all': Application.objects.all().order_by('-modified_on'),
-            'new': Application.objects.filter(state__in=[revoke_state, reject_state]).order_by('-modified_on'),
-            'applying': Application.objects.exclude(state__in=[revoke_state, reject_state, approved_state]).order_by('-modified_on'),
-            'approved': Application.objects.filter(state=approved_state).order_by('-modified_on'),
+            'all': Application.objects.all(),
+            'new': Application.objects.filter(state__in=[revoke_state, reject_state]),
+            'applying': Application.objects.exclude(state__in=[revoke_state, reject_state, approved_state]),
+            'approved': Application.objects.filter(state=approved_state),
         }[filter]
+        applications = applications.filter(application_date__range=(start_date, end_date)).order_by('-modified_on')
         ctx['applications'] = applications
         ctx['is_hr'] = True
         ctx['filter'] = filter
         return myrender(request, 'overtime/index.html', ctx)
     else:
-        # application_flows = request.user.applicationflow_set.all()
         application_flows = {
-            'all': request.user.applicationflow_set.all().order_by('-application__modified_on'),
-            'new': request.user.applicationflow_set.filter(application__state__in=[revoke_state, reject_state]).order_by('-application__modified_on'),
-            'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]).order_by('-application__modified_on'),
-            'approved': request.user.applicationflow_set.filter(application__state=approved_state).order_by('-application__modified_on'),
+            'all': request.user.applicationflow_set.all(),
+            'new': request.user.applicationflow_set.filter(application__state__in=[revoke_state, reject_state]),
+            'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]),
+            'approved': request.user.applicationflow_set.filter(application__state=approved_state),
         }[filter]
+        application_flows = application_flows.filter(application__application_date__range=(start_date, end_date)).order_by('-application__modified_on')
         ctx['application_flows'] = application_flows
         ctx['is_hr'] = False
         ctx['filter'] = filter
