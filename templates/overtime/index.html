@@ -59,17 +59,17 @@
     <div id="dialog-date-filter" title="选择时间范围">
       <form id="date-filter-form" action="{% url filter_date_overtime %}">
         <p>
-          <select id="quickDateRanges"> 							
+          <select id="quickDateRanges" onchange="changeDate();"> 							
             <option disabled="disabled" value="0">选择预设</option> 							
             <optgroup class="quick" label="预置日期"> 							
-              <option value="day|0">今天</option>
-              <option value="day|1">昨天</option>
-              <option value="week|0">本周</option>
-              <option value="week|1">上周</option>
-              <option value="month|0">本月</option>
-              <option value="month|1">上月</option>
-              <option value="year|0">今年</option>
-              <option value="year|1">去年</option>
+              <option value="1">今天</option>
+              <option value="2">昨天</option>
+              <option value="3">本周</option>
+              <option value="4">上周</option>
+              <option value="5">本月</option>
+              <option value="6">上月</option>
+              <option value="7">今年</option>
+              <option value="8">去年</option>
             </optgroup>
         	</select>
       	</p><br>
@@ -103,6 +103,47 @@
         		$( "#date_from" ).datepicker( "option", "maxDate", selectedDate );
         	}
         });
+        
+        function fDate(date){
+      	   if(!date.getDate()){return '';}
+      	   var day = date.getDate();
+      	   var month = date.getMonth();
+      	   var year = date.getFullYear();
+      	   month++; // adjust javascript month
+      	   var dateFormat = 'yy-mm-dd';
+      	   return jQuery.datepicker.formatDate( dateFormat, date ); 
+      	}
+      	
+      	function changeDate() {
+            switch($('#quickDateRanges').val()) {
+              case '1':  //today
+                $('#date_from').val(fDate(Date.now()));
+                $('#date_to').val(fDate(Date.now()));
+                break;
+              case '2':  //yestoday
+                $('#date_from').val(fDate(Date.parse('1 day ago')));
+                $('#date_to').val(fDate(Date.parse('1 day ago')));
+                break;
+              case '3':  //this week
+                break;
+              case '4':  //last week
+                break;
+              case '5':  //this month
+                break;
+              case '6':  //last month
+                $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
+                $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
+                break;
+              case '7':  //this year
+                $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
+                $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
+                break;
+              case '8':  //last year
+                $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
+                $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
+                break;
+            }
+      	}
 
       	function showDatePicker() {
       		$( "#dialog-date-filter" ).dialog({
