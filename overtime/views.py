@@ -45,16 +45,69 @@ def index(request, filter='all'):
     reject_state = ApplicationState.objects.get(code='Reject')
     # approved
     approved_state = ApplicationState.objects.get(code='Approved')
-    
-    start_date = request.session.get('date_from', '')
-    if start_date is None or start_date=='':
-        start_date = datetime.date(datetime.datetime.now().year, 1, 1)
-    end_date = request.session.get('date_to', '')
-    if end_date is None or end_date=='':
-        end_date = datetime.datetime.now()
-    
-    print start_date
-    print end_date
+
+    start_time = ''
+    end_time = ''
+    date_filter = request.session.get('date_filter', '7')
+    date_filter = '1'
+    if date_filter == '0':  # custom
+        start_time = datetime.datetime.strptime(request.session.get('date_from', ''), '%Y-%m-%d')
+        end_time = datetime.datetime.strptime(request.session.get('date_to', ''), '%Y-%m-%d')
+        end_time = datetime.datetime(end_time.year, end_time.month, end_time.day, 23, 59, 59)
+        print request.session.get('date_from', '')
+        print request.session.get('date_to', '')
+        date_filter = u'时间范围：' + request.session.get('date_from', '') + ' - ' + request.session.get('date_to', '')
+    elif date_filter == '1':  # today
+        now = datetime.datetime.now()
+        start_time = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
+        end_time = datetime.datetime(now.year, now.month, now.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(now, '%Y-%m-%d')
+    elif date_filter == '2':  # yestoday
+        now = datetime.datetime.now()
+        yestoday = now - datetime.timedelta(days=1)
+        start_time = datetime.datetime(yestoday.year, yestoday.month, yestoday.day, 0, 0, 0)
+        end_time = datetime.datetime(yestoday.year, yestoday.month, yestoday.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(yestoday, '%Y-%m-%d')
+    elif date_filter == '3':  # this week
+        now = datetime.datetime.now()
+        monday = now - datetime.timedelta(days=now.isoweekday()-1)
+        sunday = monday + datetime.timedelta(days=6)
+        start_time = datetime.datetime(monday.year, monday.month, monday.day, 0, 0, 0)
+        end_time = datetime.datetime(sunday.year, sunday.month, sunday.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(start_time, '%Y-%m-%d') + ' - ' + datetime.datetime.strftime(end_time, '%Y-%m-%d')
+    elif date_filter == '4':  # last week
+        now = datetime.datetime.now()
+        last_monday = now - datetime.timedelta(days=now.isoweekday()-1+7)
+        last_sunday = last_monday + datetime.timedelta(days=6)
+        start_time = datetime.datetime(last_monday.year, last_monday.month, last_monday.day, 0, 0, 0)
+        end_time = datetime.datetime(last_sunday.year, last_sunday.month, last_sunday.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(start_time, '%Y-%m-%d') + ' - ' + datetime.datetime.strftime(end_time, '%Y-%m-%d')
+    elif date_filter == '5':  # this month
+        now = datetime.datetime.now()
+        first_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0)
+        last_day_of_month = datetime.datetime(now.year, now.month+1, 1, 0, 0, 0) - datetime.timedelta(days=1)
+        start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
+        end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年%s月' % (first_day_of_month.year, first_day_of_month.month)
+    elif date_filter == '6':  # last month
+        now = datetime.datetime.now()
+        first_day_of_month = datetime.datetime(now.year, now.month-1, 1, 0, 0, 0)
+        last_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0) - datetime.timedelta(days=1)
+        start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
+        end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年%s月' % (first_day_of_month.year, first_day_of_month.month)
+    elif date_filter == '7':  # this year
+        now = datetime.datetime.now()
+        start_time = datetime.datetime(now.year, 1, 1, 0, 0, 0)
+        end_time = datetime.datetime(now.year, 12, 31, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年' % (now.year)
+    elif date_filter == '8':  # last year
+        now = datetime.datetime.now()
+        start_time = datetime.datetime(now.year-1, 1, 1, 0, 0, 0)
+        end_time = datetime.datetime(now.year-1, 12, 31, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年' % (now.year-1)
+
+    ctx['date_filter'] = date_filter
         
     if hrgroup in request.user.groups.all():
         # applications = Application.objects.all()
@@ -64,7 +117,7 @@ def index(request, filter='all'):
             'applying': Application.objects.exclude(state__in=[revoke_state, reject_state, approved_state]),
             'approved': Application.objects.filter(state=approved_state),
         }[filter]
-        applications = applications.filter(application_date__range=(start_date, end_date)).order_by('-modified_on')
+        applications = applications.filter(application_date__range=(start_time, end_time)).order_by('-modified_on')
         ctx['applications'] = applications
         ctx['is_hr'] = True
         ctx['filter'] = filter
@@ -76,7 +129,7 @@ def index(request, filter='all'):
             'applying': request.user.applicationflow_set.exclude(application__state__in=[revoke_state, reject_state, approved_state]),
             'approved': request.user.applicationflow_set.filter(application__state=approved_state),
         }[filter]
-        application_flows = application_flows.filter(application__application_date__range=(start_date, end_date)).order_by('-application__modified_on')
+        application_flows = application_flows.filter(application__application_date__range=(start_time, end_time)).order_by('-application__modified_on')
         ctx['application_flows'] = application_flows
         ctx['is_hr'] = False
         ctx['filter'] = filter
@@ -100,6 +153,7 @@ def filter_approved(request):
 
 @login_required
 def filter_date(request):
+    request.session['date_filter'] = request.GET.get('quickDateRanges', '0')
     request.session['date_from'] = request.GET.get('date_from', '')
     request.session['date_to'] = request.GET.get('date_to', '')
     return HttpResponseRedirect(reverse('overtime'))

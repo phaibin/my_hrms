@@ -134,3 +134,5 @@ table td { padding:1px 5px 1px 5px; }
 #app_state { vertical-align:middle; }
 
 #dialog-date-filter { display:none; }
+
+label.error { color:red; }
