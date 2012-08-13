@@ -103,7 +103,8 @@ hr.no-margin { margin:1px 0 15px 0; }
 .main {  }
 .main_content { }
 
-table td { padding:1px 5px 1px 5px; }
+table th, td { padding:1px 5px 1px 5px; text-align:right; }
+table td { text-align:left; }
 
 .errorlist { color: red; margin:5px 0 5px 0; }
 

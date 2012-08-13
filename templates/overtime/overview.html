@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}加班统计{% endblock %}
+
+{% block content %} 
+  <div class="box post">
+      <h2>{% if form.instance.id %}修改{% else %}加班统计{% endif %}</h2>
+      <div class="float_right">
+        <span id="date_filter" onclick="showDatePicker();">{{ date_filter }}</span>
+      </div>
+      <h3>基本信息</h3>
+      <table>
+        <tr><td>姓名</td><td>{{ request.user.userprofile.chinese_name }}</td></tr>
+        <tr><td>部门</td><td>Data</td></tr>
+        <tr><td>入职日期</td><td>Data</td></tr>
+        <tr><td>已休年假天数</td><td>Data</td></tr>
+        <tr><td>年假剩余天数</td><td>Data</td></tr>
+      </table>
+      <br>
+      <h3>加班信息</h3>
+      <table>
+        <tr><th></th><th>标题</th><th>开始时间</th><th>结束时间</th><th>加班时间(小时)</th></tr>
+        {% for flow in application_flows %}
+        <tr><td>{{ forloop.counter }}</td><td>{{ flow.application.subject }}</td><td>{{ flow.application.start_time|date:"Y年n月j日 H:i" }}</td><td>{{ flow.application.end_time|date:"Y年n月j日 H:i" }}</td><td>{{ flow.application.total_time }}</td></tr>
+        {% endfor %}
+      </table>
+  </div>
+  <div class="box">
+      <p>
+        <a class="linkbutton" href="{% url overtime %}">返回</a>
+      </p>
+  </div>
+        
+{% endblock %}

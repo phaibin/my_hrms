@@ -4,7 +4,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
-from datetime import datetime
+import datetime
 
 class UserProfileManager(models.Manager):
     def userprofile_in_employee_and_PM(self):
@@ -58,6 +58,17 @@ class Application(models.Model):
     @property
     def participants_string(self):
         return ', '.join([person.userprofile.chinese_name for person in self.participants.all()])
+        
+    @property
+    def total_time(self):
+        begin = self.start_time
+        print begin
+        if self.start_time.hour < 19:
+            begin = datetime.datetime(self.start_time.year, self.start_time.month, self.start_time.day, 19, 0, 0)
+        total = int((self.end_time-begin).total_seconds()/3600)
+        if total < 0:
+            total = 0
+        return total
         
     def applicationflow_by_user(self, user):
         try:

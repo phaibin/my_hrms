@@ -46,67 +46,7 @@ def index(request, filter='all'):
     # approved
     approved_state = ApplicationState.objects.get(code='Approved')
 
-    start_time = ''
-    end_time = ''
-    date_filter = request.session.get('date_filter', '7')
-    date_filter = '1'
-    if date_filter == '0':  # custom
-        start_time = datetime.datetime.strptime(request.session.get('date_from', ''), '%Y-%m-%d')
-        end_time = datetime.datetime.strptime(request.session.get('date_to', ''), '%Y-%m-%d')
-        end_time = datetime.datetime(end_time.year, end_time.month, end_time.day, 23, 59, 59)
-        print request.session.get('date_from', '')
-        print request.session.get('date_to', '')
-        date_filter = u'时间范围：' + request.session.get('date_from', '') + ' - ' + request.session.get('date_to', '')
-    elif date_filter == '1':  # today
-        now = datetime.datetime.now()
-        start_time = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
-        end_time = datetime.datetime(now.year, now.month, now.day, 23, 59, 59)
-        date_filter = u'时间范围：' + datetime.datetime.strftime(now, '%Y-%m-%d')
-    elif date_filter == '2':  # yestoday
-        now = datetime.datetime.now()
-        yestoday = now - datetime.timedelta(days=1)
-        start_time = datetime.datetime(yestoday.year, yestoday.month, yestoday.day, 0, 0, 0)
-        end_time = datetime.datetime(yestoday.year, yestoday.month, yestoday.day, 23, 59, 59)
-        date_filter = u'时间范围：' + datetime.datetime.strftime(yestoday, '%Y-%m-%d')
-    elif date_filter == '3':  # this week
-        now = datetime.datetime.now()
-        monday = now - datetime.timedelta(days=now.isoweekday()-1)
-        sunday = monday + datetime.timedelta(days=6)
-        start_time = datetime.datetime(monday.year, monday.month, monday.day, 0, 0, 0)
-        end_time = datetime.datetime(sunday.year, sunday.month, sunday.day, 23, 59, 59)
-        date_filter = u'时间范围：' + datetime.datetime.strftime(start_time, '%Y-%m-%d') + ' - ' + datetime.datetime.strftime(end_time, '%Y-%m-%d')
-    elif date_filter == '4':  # last week
-        now = datetime.datetime.now()
-        last_monday = now - datetime.timedelta(days=now.isoweekday()-1+7)
-        last_sunday = last_monday + datetime.timedelta(days=6)
-        start_time = datetime.datetime(last_monday.year, last_monday.month, last_monday.day, 0, 0, 0)
-        end_time = datetime.datetime(last_sunday.year, last_sunday.month, last_sunday.day, 23, 59, 59)
-        date_filter = u'时间范围：' + datetime.datetime.strftime(start_time, '%Y-%m-%d') + ' - ' + datetime.datetime.strftime(end_time, '%Y-%m-%d')
-    elif date_filter == '5':  # this month
-        now = datetime.datetime.now()
-        first_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0)
-        last_day_of_month = datetime.datetime(now.year, now.month+1, 1, 0, 0, 0) - datetime.timedelta(days=1)
-        start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
-        end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
-        date_filter = u'时间范围：' + u'%s年%s月' % (first_day_of_month.year, first_day_of_month.month)
-    elif date_filter == '6':  # last month
-        now = datetime.datetime.now()
-        first_day_of_month = datetime.datetime(now.year, now.month-1, 1, 0, 0, 0)
-        last_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0) - datetime.timedelta(days=1)
-        start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
-        end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
-        date_filter = u'时间范围：' + u'%s年%s月' % (first_day_of_month.year, first_day_of_month.month)
-    elif date_filter == '7':  # this year
-        now = datetime.datetime.now()
-        start_time = datetime.datetime(now.year, 1, 1, 0, 0, 0)
-        end_time = datetime.datetime(now.year, 12, 31, 23, 59, 59)
-        date_filter = u'时间范围：' + u'%s年' % (now.year)
-    elif date_filter == '8':  # last year
-        now = datetime.datetime.now()
-        start_time = datetime.datetime(now.year-1, 1, 1, 0, 0, 0)
-        end_time = datetime.datetime(now.year-1, 12, 31, 23, 59, 59)
-        date_filter = u'时间范围：' + u'%s年' % (now.year-1)
-
+    start_time, end_time, date_filter = get_filter(request)
     ctx['date_filter'] = date_filter
         
     if hrgroup in request.user.groups.all():
@@ -156,7 +96,7 @@ def filter_date(request):
     request.session['date_filter'] = request.GET.get('quickDateRanges', '0')
     request.session['date_from'] = request.GET.get('date_from', '')
     request.session['date_to'] = request.GET.get('date_to', '')
-    return HttpResponseRedirect(reverse('overtime'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @login_required    
 def show(request, id):
@@ -179,6 +119,17 @@ def new(request):
             
             return HttpResponseRedirect(reverse('overtime'))
     return myrender(request, 'overtime/form.html', {'form': appForm})
+
+@login_required
+def overview(request):
+    ctx = {}
+    start_time, end_time, date_filter = get_filter(request)
+    ctx['date_filter'] = date_filter
+    approved_state = ApplicationState.objects.get(code='Approved')
+    application_flows = request.user.applicationflow_set.filter(application__state=approved_state)
+    application_flows = application_flows.filter(application__application_date__range=(start_time, end_time)).order_by('-application__modified_on')
+    ctx['application_flows'] = application_flows
+    return myrender(request, 'overtime/overview.html', ctx)
 
 @login_required
 def edit(request, id):
@@ -290,3 +241,65 @@ def _send_flow_email(request, app, subject, next_user):
     template = 'overtime/email.html'
     context = {'app': app, 'app_url': request.build_absolute_uri(reverse('show_overtime', args=[app.id]))}
     _send_email(subject, mail_from, list(mail_to_list), template, context)
+    
+def get_filter(request):
+    start_time = ''
+    end_time = ''
+    date_filter = request.session.get('date_filter', '7')
+    # date_filter = '1'
+    if date_filter == '0':  # custom
+        start_time = datetime.datetime.strptime(request.session.get('date_from', ''), '%Y-%m-%d')
+        end_time = datetime.datetime.strptime(request.session.get('date_to', ''), '%Y-%m-%d')
+        end_time = datetime.datetime(end_time.year, end_time.month, end_time.day, 23, 59, 59)
+        date_filter = u'时间范围：' + request.session.get('date_from', '') + ' - ' + request.session.get('date_to', '')
+    elif date_filter == '1':  # today
+        now = datetime.datetime.now()
+        start_time = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
+        end_time = datetime.datetime(now.year, now.month, now.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(now, '%Y-%m-%d')
+    elif date_filter == '2':  # yestoday
+        now = datetime.datetime.now()
+        yestoday = now - datetime.timedelta(days=1)
+        start_time = datetime.datetime(yestoday.year, yestoday.month, yestoday.day, 0, 0, 0)
+        end_time = datetime.datetime(yestoday.year, yestoday.month, yestoday.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(yestoday, '%Y-%m-%d')
+    elif date_filter == '3':  # this week
+        now = datetime.datetime.now()
+        monday = now - datetime.timedelta(days=now.isoweekday()-1)
+        sunday = monday + datetime.timedelta(days=6)
+        start_time = datetime.datetime(monday.year, monday.month, monday.day, 0, 0, 0)
+        end_time = datetime.datetime(sunday.year, sunday.month, sunday.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(start_time, '%Y-%m-%d') + ' - ' + datetime.datetime.strftime(end_time, '%Y-%m-%d')
+    elif date_filter == '4':  # last week
+        now = datetime.datetime.now()
+        last_monday = now - datetime.timedelta(days=now.isoweekday()-1+7)
+        last_sunday = last_monday + datetime.timedelta(days=6)
+        start_time = datetime.datetime(last_monday.year, last_monday.month, last_monday.day, 0, 0, 0)
+        end_time = datetime.datetime(last_sunday.year, last_sunday.month, last_sunday.day, 23, 59, 59)
+        date_filter = u'时间范围：' + datetime.datetime.strftime(start_time, '%Y-%m-%d') + ' - ' + datetime.datetime.strftime(end_time, '%Y-%m-%d')
+    elif date_filter == '5':  # this month
+        now = datetime.datetime.now()
+        first_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0)
+        last_day_of_month = datetime.datetime(now.year, now.month+1, 1, 0, 0, 0) - datetime.timedelta(days=1)
+        start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
+        end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年%s月' % (first_day_of_month.year, first_day_of_month.month)
+    elif date_filter == '6':  # last month
+        now = datetime.datetime.now()
+        first_day_of_month = datetime.datetime(now.year, now.month-1, 1, 0, 0, 0)
+        last_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0) - datetime.timedelta(days=1)
+        start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
+        end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年%s月' % (first_day_of_month.year, first_day_of_month.month)
+    elif date_filter == '7':  # this year
+        now = datetime.datetime.now()
+        start_time = datetime.datetime(now.year, 1, 1, 0, 0, 0)
+        end_time = datetime.datetime(now.year, 12, 31, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年' % (now.year)
+    elif date_filter == '8':  # last year
+        now = datetime.datetime.now()
+        start_time = datetime.datetime(now.year-1, 1, 1, 0, 0, 0)
+        end_time = datetime.datetime(now.year-1, 12, 31, 23, 59, 59)
+        date_filter = u'时间范围：' + u'%s年' % (now.year-1)
+
+    return (start_time, end_time, date_filter)
