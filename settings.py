@@ -163,3 +163,5 @@ EMAIL_HOST_USER = 'haibin.peng@jinjiang.com'
 EMAIL_HOST_PASSWORD = '00000'
 
 SENDING_EMAIL = False
+
+WSGI_APPLICATION = "my_hrms.wsgi.application"
