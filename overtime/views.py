@@ -142,7 +142,7 @@ def excel(request):
     application_flows = application_flows.filter(application__application_date__range=(start_time, end_time)).order_by('-application__modified_on')
     
     wb = xlwt.Workbook()
-    ws = wb.add_sheet('A Test Sheet')
+    ws = wb.add_sheet('Sheet')
 
     ws.write(0, 0, u'基本信息')
     ws.write(1, 0, u'姓名')
@@ -162,12 +162,12 @@ def excel(request):
     for flow in application_flows:
         ws.write(9+i, 0, i+1)
         ws.write(9+i, 1, flow.application.subject)
-        ws.write(9+i, 2, flow.application.start_time.strftime('%s年%s月%s日 %s:%s'))
-        ws.write(9+i, 3, flow.application.end_time.strftime('%s年%s月%s日 %s:%s'))
+        ws.write(9+i, 2, unicode(flow.application.start_time.strftime('%Y年%m月%d日 %H:%M'), 'utf-8'))
+        ws.write(9+i, 3, unicode(flow.application.end_time.strftime('%Y年%m月%d日 %H:%M'), 'utf-8'))
         ws.write(9+i, 4, flow.application.total_time)
         i = i + 1
 
-    fname = 'testfile.xls'
+    fname = datetime.datetime.now().strftime('%Y%m%d.xls')
     response = HttpResponse(mimetype="application/x-download")
     response['Content-Disposition'] ='attachment; filename=%s' % smart_str(fname) #解决文件名乱码/不显示的问题
     wb.save(response)
@@ -325,24 +325,24 @@ def get_filter(request):
         last_day_of_month = datetime.datetime(now.year, now.month+1, 1, 0, 0, 0) - datetime.timedelta(days=1)
         start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
         end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
-        date_filter = first_day_of_month.strftime('时间范围：%s年%s月')
+        date_filter = first_day_of_month.strftime('时间范围：%Y年%m月')
     elif date_filter == '6':  # last month
         now = datetime.datetime.now()
         first_day_of_month = datetime.datetime(now.year, now.month-1, 1, 0, 0, 0)
         last_day_of_month = datetime.datetime(now.year, now.month, 1, 0, 0, 0) - datetime.timedelta(days=1)
         start_time = datetime.datetime(first_day_of_month.year, first_day_of_month.month, first_day_of_month.day, 0, 0, 0)
         end_time = datetime.datetime(last_day_of_month.year, last_day_of_month.month, last_day_of_month.day, 23, 59, 59)
-        date_filter = first_day_of_month.strftime('时间范围：%s年%s月')
+        date_filter = first_day_of_month.strftime('时间范围：%Y年%m月')
     elif date_filter == '7':  # this year
         now = datetime.datetime.now()
         start_time = datetime.datetime(now.year, 1, 1, 0, 0, 0)
         end_time = datetime.datetime(now.year, 12, 31, 23, 59, 59)
         # date_filter = u'时间范围：' + u'%s年' % (now.year)
-        date_filter = now.strftime('时间范围：%s年')
+        date_filter = now.strftime('时间范围：%Y年')
     elif date_filter == '8':  # last year
         now = datetime.datetime.now()
         start_time = datetime.datetime(now.year-1, 1, 1, 0, 0, 0)
         end_time = datetime.datetime(now.year-1, 12, 31, 23, 59, 59)
-        date_filter = u'时间范围：' + u'%s年' % (now.year-1)
+        date_filter = u'时间范围：' + u'%d年' % (now.year-1)
 
     return (start_time, end_time, date_filter)
