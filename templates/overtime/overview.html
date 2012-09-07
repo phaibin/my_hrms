@@ -4,9 +4,14 @@
 
 {% block content %} 
   <div class="box post">
-      <h2>{% if form.instance.id %}修改{% else %}加班统计{% endif %}</h2>
-      <div class="float_right">
-        <span id="date_filter" onclick="showDatePicker();">{{ date_filter }}</span>
+    <div id="new_app">
+      <a class="linkbutton" href="{% url excel_overtime %}">导出报表</a>
+    </div>
+     <div id="app-list-title" class="clear">
+        <div class="float_right">
+          <span id="date_filter" onclick="showDatePicker();">{{ date_filter }}</span>
+        </div>
+        <h2>加班统计</h2>
       </div>
       <h3>基本信息</h3>
       <table>
