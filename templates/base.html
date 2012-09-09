@@ -1,192 +1,237 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>{% block title %}{% endblock %}</title>
-<link href="{{ STATIC_URL }}css/reset.css" rel="stylesheet" type="text/css" />
-<link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" />
-<link type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.22.custom.css" rel="Stylesheet" />	
-<script type="text/javascript" src="{{ STATIC_URL }}js/date.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.22.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/messages_cn.js"></script>
-</head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<title>{% block title %}{% endblock %}</title>
+    
+    <!-- Le styles -->
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
 
-<body>
-<div class="page">
-    <div class="header box">
-        <h1><a href="/">HRMS</a></h1>
-        <div id="nav">
-          <div class="float_right" id="user_info">
-          {% if request.user.is_authenticated %}
-            欢迎：{{ request.user }} | <a href='{% url logout %}'>退出</a>
-          {% else %}
-            <a href='{% url login %}?next={{ request.path }}'>登录</a>
-          {% endif %}
-            | <a href="/admin">我是管理员</a>
-          </div>
-          <div class="menu">
-            <ul>
-              <li><a href="/" class="{% ifequal request.path '/' %}select{% endifequal %}">首页</a></li>
-              <li><a href="{% url overtime %}" class="{% ifequal current_app 'overtime' %}select{% endifequal %}">加班系统</a></li>
-              <li><a href="">请假系统</a></li>
-          </div>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
+	<link href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.22.custom.css" rel="Stylesheet">
+
+	</head>
+
+	<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">HRMS</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="{% ifequal request.path '/' %}active{% endifequal %}"><a href="/">首页</a></li>
+              <li class="{% ifequal current_app 'overtime' %}active{% endifequal %}"><a href="{% url overtime %}">加班系统</a></li>
+              <li class=""><a href="#about">请假系统</a></li>
+              <li class="{% ifequal request.path '/about' %}active{% endifequal %}"><a href="/about">关于</a></li>
+            </ul>
+            <ul class="nav pull-right">
+              <li class="divider-vertical"></li>
+              <li class="dropdown"><a href="/admin" class="navbar-link">我是管理员</a></li>
+            </ul>
+            {% if request.user.is_authenticated %}
+            <p class="navbar-text pull-right">
+              欢迎：{{ request.user }} | <a href='{% url logout %}' class="navbar-link">退出</a>
+            </p>
+            {% else %}
+            <form method="post" class="navbar-form pull-right" action="{% url login %}">
+              {% csrf_token %}
+              <input id="id_username" type="text" name="username" maxlength="30" class="span2" placeoholder="用户名">
+              <input id="id_password" type="text" name="password" maxlength="30" class="span2" placeoholder="密码">
+              <input type="hidden" name="next" value="/" />
+              <button type="submit" class="btn">登录</button>
+            </form>
+            {% endif %}
+          </div><!--/.nav-collapse -->
         </div>
-    </div>
-
-    <div class="main">
-      <script>
-      $(document).ready(function(){
-        $("#date-filter-form").validate({
-          focusInvalid: false
-        });
-      });
-      </script>
-      
-      <script>
-          $( "#date_from" ).datepicker({
-          	defaultDate: "+1w",
-          	changeMonth: true,
-          	numberOfMonths: 3,
-          	dateFormat: "yy-mm-dd",
-          	onSelect: function( selectedDate ) {
-          	  $('#quickDateRanges').val(0);
-          		$("#date_to").datepicker( "option", "minDate", selectedDate );
-          	}
-          });
-          $( "#date_to" ).datepicker({
-          	defaultDate: "+1w",
-          	changeMonth: true,
-          	numberOfMonths: 3,
-          	dateFormat: "yy-mm-dd",
-          	onSelect: function( selectedDate ) {
-          		$( "#date_from" ).datepicker( "option", "maxDate", selectedDate );
-          	}
-          });
-
-          function fDate(date){
-        	   if(!date.getDate()){return '';}
-        	   var day = date.getDate();
-        	   var month = date.getMonth();
-        	   var year = date.getFullYear();
-        	   month++; // adjust javascript month
-        	   var dateFormat = 'yy-mm-dd';
-        	   return jQuery.datepicker.formatDate( dateFormat, date ); 
-        	}
-
-        	function changeDate() {
-              switch($('#quickDateRanges').val()) {
-                case '1':  //today
-                  $('#date_from').val(fDate(Date.now()));
-                  $('#date_to').val(fDate(Date.now()));
-                  break;
-                case '2':  //yestoday
-                  $('#date_from').val(fDate(Date.parse('1 day ago')));
-                  $('#date_to').val(fDate(Date.parse('1 day ago')));
-                  break;
-                case '3':  //this week
-                  monday = getMonday(Date.now());
-                  sunday = new Date(monday);
-                  sunday.setDate(monday.getDate()+6);
-                  $('#date_from').val(fDate(monday));
-                  $('#date_to').val(fDate(sunday));
-                  break;
-                case '4':  //last week
-                  monday = getMonday(Date.parse('1 week ago'));
-                  sunday = new Date(monday);
-                  sunday.setDate(monday.getDate()+6);
-                  $('#date_from').val(fDate(monday));
-                  $('#date_to').val(fDate(sunday));
-                  break;
-                case '5':  //this month
-                  $('#date_from').val(fDate(Date.now().moveToFirstDayOfMonth()));
-                  $('#date_to').val(fDate(Date.now().moveToLastDayOfMonth()));
-                  break;
-                case '6':  //last month
-                  $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
-                  $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
-                  break;
-                case '7':  //this year
-                  $('#date_from').val(fDate(Date.now().moveToFirstDayOfYear()));
-                  $('#date_to').val(fDate(Date.now().moveToLastDayOfYear()));
-                  break;
-                case '8':  //last year
-                  $('#date_from').val(fDate(Date.parse('1 year ago').moveToFirstDayOfYear()));
-                  $('#date_to').val(fDate(Date.parse('1 year ago').moveToLastDayOfYear()));
-                  break;
-              }
-        	}
-
-        	function showDatePicker() {
-        		$( "#dialog-date-filter" ).dialog({
-        			resizable: false,
-        			draggable: false,
-        			height:200,
-        			width:300,
-        			modal: true,
-        			dialogClass: "alert",
-        			buttons: {
-        				"确定": function() {
-                  $("#date-filter-form").submit();
-                  // $( this ).dialog( "close" );
-        				},
-        				"取消": function() {
-        					$( this ).dialog( "close" );
-        				}
-        			},
-              open: function(event, ui) {
-                $("#quickDateRanges").val(0);
-              },
-          	});
-        	}
-
-          function getMonday(d) {
-            var day = d.getDay(),
-            diff = d.getDate() - day + 1 + (day == 0 ? -7 : 0); 
-            return new Date(d.setDate(diff));
-          }
-
-      </script>
-      
-      {% block content %} 
-      {% endblock %}
-      
-      <div id="dialog-date-filter" title="选择时间范围">
-        <form id="date-filter-form" action="{% url filter_date_overtime %}">
-          <p>
-            <select id="quickDateRanges" name="quickDateRanges" onchange="changeDate();"> 							
-              <option disabled="disabled" value="0">选择预设</option> 							
-              <optgroup class="quick" label="预置日期"> 							
-                <option value="1">今天</option>
-                <option value="2">昨天</option>
-                <option value="3">本周</option>
-                <option value="4">上周</option>
-                <option value="5">本月</option>
-                <option value="6">上月</option>
-                <option value="7">今年</option>
-                <option value="8">去年</option>
-              </optgroup>
-          	</select>
-        	</p><br>
-          <p>
-            <label for="date_from">从</label>
-            <input type="text" id="date_from" name="date_from" class="required" />
-          </p>
-          <p>
-            <label for="date_to">到</label>
-            <input type="text" id="date_to" name="date_to" class="required" />
-          </p>
-        </form>
       </div>
+    </div>
+        
+    <div class="container">
+
+        <div class="main">
+          <script>
+          $(document).ready(function(){
+            $("#date-filter-form").validate({
+              focusInvalid: false
+            });
+          });
+          </script>
       
-    </div>
+          <script>
+              $( "#date_from" ).datepicker({
+              	defaultDate: "+1w",
+              	changeMonth: true,
+              	numberOfMonths: 3,
+              	dateFormat: "yy-mm-dd",
+              	onSelect: function( selectedDate ) {
+              	  $('#quickDateRanges').val(0);
+              		$("#date_to").datepicker( "option", "minDate", selectedDate );
+              	}
+              });
+              $( "#date_to" ).datepicker({
+              	defaultDate: "+1w",
+              	changeMonth: true,
+              	numberOfMonths: 3,
+              	dateFormat: "yy-mm-dd",
+              	onSelect: function( selectedDate ) {
+              		$( "#date_from" ).datepicker( "option", "maxDate", selectedDate );
+              	}
+              });
 
-    <div class="foot box">
-        Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a>
-    </div>
+              function fDate(date){
+            	   if(!date.getDate()){return '';}
+            	   var day = date.getDate();
+            	   var month = date.getMonth();
+            	   var year = date.getFullYear();
+            	   month++; // adjust javascript month
+            	   var dateFormat = 'yy-mm-dd';
+            	   return jQuery.datepicker.formatDate( dateFormat, date ); 
+            	}
 
-</div>
-</body>
+            	function changeDate() {
+                  switch($('#quickDateRanges').val()) {
+                    case '1':  //today
+                      $('#date_from').val(fDate(Date.now()));
+                      $('#date_to').val(fDate(Date.now()));
+                      break;
+                    case '2':  //yestoday
+                      $('#date_from').val(fDate(Date.parse('1 day ago')));
+                      $('#date_to').val(fDate(Date.parse('1 day ago')));
+                      break;
+                    case '3':  //this week
+                      monday = getMonday(Date.now());
+                      sunday = new Date(monday);
+                      sunday.setDate(monday.getDate()+6);
+                      $('#date_from').val(fDate(monday));
+                      $('#date_to').val(fDate(sunday));
+                      break;
+                    case '4':  //last week
+                      monday = getMonday(Date.parse('1 week ago'));
+                      sunday = new Date(monday);
+                      sunday.setDate(monday.getDate()+6);
+                      $('#date_from').val(fDate(monday));
+                      $('#date_to').val(fDate(sunday));
+                      break;
+                    case '5':  //this month
+                      $('#date_from').val(fDate(Date.now().moveToFirstDayOfMonth()));
+                      $('#date_to').val(fDate(Date.now().moveToLastDayOfMonth()));
+                      break;
+                    case '6':  //last month
+                      $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
+                      $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
+                      break;
+                    case '7':  //this year
+                      $('#date_from').val(fDate(Date.now().moveToFirstDayOfYear()));
+                      $('#date_to').val(fDate(Date.now().moveToLastDayOfYear()));
+                      break;
+                    case '8':  //last year
+                      $('#date_from').val(fDate(Date.parse('1 year ago').moveToFirstDayOfYear()));
+                      $('#date_to').val(fDate(Date.parse('1 year ago').moveToLastDayOfYear()));
+                      break;
+                  }
+            	}
+
+            	function showDatePicker() {
+            		$( "#dialog-date-filter" ).dialog({
+            			resizable: false,
+            			draggable: false,
+            			height:200,
+            			width:300,
+            			modal: true,
+            			dialogClass: "alert",
+            			buttons: {
+            				"确定": function() {
+                      $("#date-filter-form").submit();
+                      // $( this ).dialog( "close" );
+            				},
+            				"取消": function() {
+            					$( this ).dialog( "close" );
+            				}
+            			},
+                  open: function(event, ui) {
+                    $("#quickDateRanges").val(0);
+                  },
+              	});
+            	}
+
+              function getMonday(d) {
+                var day = d.getDay(),
+                diff = d.getDate() - day + 1 + (day == 0 ? -7 : 0); 
+                return new Date(d.setDate(diff));
+              }
+
+          </script>
+      
+          {% block content %} 
+          {% endblock %}
+      
+          <div id="dialog-date-filter" title="选择时间范围">
+            <form id="date-filter-form" action="{% url filter_date_overtime %}">
+              <p>
+                <select id="quickDateRanges" name="quickDateRanges" onchange="changeDate();"> 							
+                  <option disabled="disabled" value="0">选择预设</option> 							
+                  <optgroup class="quick" label="预置日期"> 							
+                    <option value="1">今天</option>
+                    <option value="2">昨天</option>
+                    <option value="3">本周</option>
+                    <option value="4">上周</option>
+                    <option value="5">本月</option>
+                    <option value="6">上月</option>
+                    <option value="7">今年</option>
+                    <option value="8">去年</option>
+                  </optgroup>
+              	</select>
+            	</p><br>
+              <p>
+                <label for="date_from">从</label>
+                <input type="text" id="date_from" name="date_from" class="required" />
+              </p>
+              <p>
+                <label for="date_to">到</label>
+                <input type="text" id="date_to" name="date_to" class="required" />
+              </p>
+            </form>
+          </div>
+      
+        </div>
+
+        <footer>
+            <p>Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
+        </footer>
+
+    </div>
+        
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+    	<script src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+        <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+        
+    	<script src="{{ STATIC_URL }}js/date.js"></script>
+    	<script src="{{ STATIC_URL }}js/jquery-ui-1.8.22.custom.min.js"></script>
+    	<script src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js"></script>
+    	<script src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
+    	<script src="{{ STATIC_URL }}js/messages_cn.js"></script>
+        
+	</body>
 </html>
