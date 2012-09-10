@@ -1,3 +1,12 @@
+html, body { height: 100%; }
+
+.container { min-height: 100%; height: auto !important; height: 100%; }
+        
+#push-top { padding-top: 60px; }
+#push-bottom { padding-bottom: 81px; }
+        
+.footer { position: relative; margin-top: -81px;/*等于footer的高度*/ height: 20px; clear:both; }
+                
 body { font-size: 13px; }
 
 #dialog-date-filter { display:none; }
