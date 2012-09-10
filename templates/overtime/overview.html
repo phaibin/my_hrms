@@ -6,9 +6,7 @@
 
   <div class="page-header"><h1>加班统计</h1></div>
   
-  <div id="new_app">
-    <a class="linkbutton" href="{% url excel_overtime %}">导出报表</a>
-  </div>
+  <p><a class="btn" href="{% url excel_overtime %}">导出报表</a></p>
 
       <div class="float_right">
         <span id="date_filter" onclick="showDatePicker();">{{ date_filter }}</span>
@@ -18,11 +16,13 @@
     <div class="span5">
       <h2>基本信息</h2>
       <table class="table table-condensed">
-        <tr><td class="span2">姓名</td><td>{{ request.user.userprofile.chinese_name }}</td></tr>
-        <tr><td>部门</td><td></td></tr>
-        <tr><td>入职日期</td><td></td></tr>
-        <tr><td>已休年假天数</td><td></td></tr>
-        <tr><td>年假剩余天数</td><td></td></tr>
+        <tbody>
+          <tr><th>姓名</th><td>{{ request.user.userprofile.chinese_name }}</td></tr>
+          <tr><th>部门</th><td></td></tr>
+          <tr><th>入职日期</th><td></td></tr>
+          <tr><th>已休年假天数</th><td></td></tr>
+          <tr><th>年假剩余天数</th><td></td></tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -41,9 +41,8 @@
     </div>
   </div>
 
-    <p>
-      <a class="btn" href="{% url overtime %}">返回</a>
-    </p>
-
-        
+  <p>
+    <a class="btn" href="{% url overtime %}">返回</a>
+  </p>
+   
 {% endblock %}

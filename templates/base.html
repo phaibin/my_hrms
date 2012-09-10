@@ -55,8 +55,8 @@
             {% else %}
             <form method="post" class="navbar-form pull-right" action="{% url login %}">
               {% csrf_token %}
-              <input id="id_username" type="text" name="username" maxlength="30" class="span2" placeoholder="用户名">
-              <input id="id_password" type="text" name="password" maxlength="30" class="span2" placeoholder="密码">
+              <input id="id_username" type="text" name="username" maxlength="30" class="span2" placeholder="用户名">
+              <input id="id_password" type="text" name="password" maxlength="30" class="span2" placeholder="密码">
               <input type="hidden" name="next" value="/" />
               <button type="submit" class="btn">登录</button>
             </form>
@@ -68,124 +68,139 @@
         
     <div class="container">
 
-        <div class="main">
-          <script>
-          $(document).ready(function(){
-            $("#date-filter-form").validate({
-              focusInvalid: false
-            });
+      {% block content %} 
+      {% endblock %}
+          
+        
+      <!-- Le javascript
+      ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+    	<script src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+        <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+        
+    	<script src="{{ STATIC_URL }}js/date.js"></script>
+    	<script src="{{ STATIC_URL }}js/jquery-ui-1.8.22.custom.min.js"></script>
+    	<script src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js"></script>
+    	<script src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
+    	<script src="{{ STATIC_URL }}js/messages_cn.js"></script>
+        
+      <script>
+      $(document).ready(function(){
+        $("#date-filter-form").validate({
+          focusInvalid: false
+        });
+      });
+      </script>
+      
+      <script>
+          $( "#date_from" ).datepicker({
+          	defaultDate: "+1w",
+          	changeMonth: true,
+          	numberOfMonths: 3,
+          	dateFormat: "yy-mm-dd",
+          	onSelect: function( selectedDate ) {
+          	  $('#quickDateRanges').val(0);
+          		$("#date_to").datepicker( "option", "minDate", selectedDate );
+          	}
           });
-          </script>
-      
-          <script>
-              $( "#date_from" ).datepicker({
-              	defaultDate: "+1w",
-              	changeMonth: true,
-              	numberOfMonths: 3,
-              	dateFormat: "yy-mm-dd",
-              	onSelect: function( selectedDate ) {
-              	  $('#quickDateRanges').val(0);
-              		$("#date_to").datepicker( "option", "minDate", selectedDate );
-              	}
-              });
-              $( "#date_to" ).datepicker({
-              	defaultDate: "+1w",
-              	changeMonth: true,
-              	numberOfMonths: 3,
-              	dateFormat: "yy-mm-dd",
-              	onSelect: function( selectedDate ) {
-              		$( "#date_from" ).datepicker( "option", "maxDate", selectedDate );
-              	}
-              });
+          $( "#date_to" ).datepicker({
+          	defaultDate: "+1w",
+          	changeMonth: true,
+          	numberOfMonths: 3,
+          	dateFormat: "yy-mm-dd",
+          	onSelect: function( selectedDate ) {
+          		$( "#date_from" ).datepicker( "option", "maxDate", selectedDate );
+          	}
+          });
 
-              function fDate(date){
-            	   if(!date.getDate()){return '';}
-            	   var day = date.getDate();
-            	   var month = date.getMonth();
-            	   var year = date.getFullYear();
-            	   month++; // adjust javascript month
-            	   var dateFormat = 'yy-mm-dd';
-            	   return jQuery.datepicker.formatDate( dateFormat, date ); 
-            	}
+          function fDate(date){
+        	   if(!date.getDate()){return '';}
+        	   var day = date.getDate();
+        	   var month = date.getMonth();
+        	   var year = date.getFullYear();
+        	   month++; // adjust javascript month
+        	   var dateFormat = 'yy-mm-dd';
+        	   return jQuery.datepicker.formatDate( dateFormat, date ); 
+        	}
 
-            	function changeDate() {
-                  switch($('#quickDateRanges').val()) {
-                    case '1':  //today
-                      $('#date_from').val(fDate(Date.now()));
-                      $('#date_to').val(fDate(Date.now()));
-                      break;
-                    case '2':  //yestoday
-                      $('#date_from').val(fDate(Date.parse('1 day ago')));
-                      $('#date_to').val(fDate(Date.parse('1 day ago')));
-                      break;
-                    case '3':  //this week
-                      monday = getMonday(Date.now());
-                      sunday = new Date(monday);
-                      sunday.setDate(monday.getDate()+6);
-                      $('#date_from').val(fDate(monday));
-                      $('#date_to').val(fDate(sunday));
-                      break;
-                    case '4':  //last week
-                      monday = getMonday(Date.parse('1 week ago'));
-                      sunday = new Date(monday);
-                      sunday.setDate(monday.getDate()+6);
-                      $('#date_from').val(fDate(monday));
-                      $('#date_to').val(fDate(sunday));
-                      break;
-                    case '5':  //this month
-                      $('#date_from').val(fDate(Date.now().moveToFirstDayOfMonth()));
-                      $('#date_to').val(fDate(Date.now().moveToLastDayOfMonth()));
-                      break;
-                    case '6':  //last month
-                      $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
-                      $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
-                      break;
-                    case '7':  //this year
-                      $('#date_from').val(fDate(Date.now().moveToFirstDayOfYear()));
-                      $('#date_to').val(fDate(Date.now().moveToLastDayOfYear()));
-                      break;
-                    case '8':  //last year
-                      $('#date_from').val(fDate(Date.parse('1 year ago').moveToFirstDayOfYear()));
-                      $('#date_to').val(fDate(Date.parse('1 year ago').moveToLastDayOfYear()));
-                      break;
-                  }
-            	}
-
-            	function showDatePicker() {
-            		$( "#dialog-date-filter" ).dialog({
-            			resizable: false,
-            			draggable: false,
-            			height:200,
-            			width:300,
-            			modal: true,
-            			dialogClass: "alert",
-            			buttons: {
-            				"确定": function() {
-                      $("#date-filter-form").submit();
-                      // $( this ).dialog( "close" );
-            				},
-            				"取消": function() {
-            					$( this ).dialog( "close" );
-            				}
-            			},
-                  open: function(event, ui) {
-                    $("#quickDateRanges").val(0);
-                  },
-              	});
-            	}
-
-              function getMonday(d) {
-                var day = d.getDay(),
-                diff = d.getDate() - day + 1 + (day == 0 ? -7 : 0); 
-                return new Date(d.setDate(diff));
+        	function changeDate() {
+              switch($('#quickDateRanges').val()) {
+                case '1':  //today
+                  $('#date_from').val(fDate(Date.now()));
+                  $('#date_to').val(fDate(Date.now()));
+                  break;
+                case '2':  //yestoday
+                  $('#date_from').val(fDate(Date.parse('1 day ago')));
+                  $('#date_to').val(fDate(Date.parse('1 day ago')));
+                  break;
+                case '3':  //this week
+                  monday = getMonday(Date.now());
+                  sunday = new Date(monday);
+                  sunday.setDate(monday.getDate()+6);
+                  $('#date_from').val(fDate(monday));
+                  $('#date_to').val(fDate(sunday));
+                  break;
+                case '4':  //last week
+                  monday = getMonday(Date.parse('1 week ago'));
+                  sunday = new Date(monday);
+                  sunday.setDate(monday.getDate()+6);
+                  $('#date_from').val(fDate(monday));
+                  $('#date_to').val(fDate(sunday));
+                  break;
+                case '5':  //this month
+                  $('#date_from').val(fDate(Date.now().moveToFirstDayOfMonth()));
+                  $('#date_to').val(fDate(Date.now().moveToLastDayOfMonth()));
+                  break;
+                case '6':  //last month
+                  $('#date_from').val(fDate(Date.parse('1 month ago').moveToFirstDayOfMonth()));
+                  $('#date_to').val(fDate(Date.parse('1 month ago').moveToLastDayOfMonth()));
+                  break;
+                case '7':  //this year
+                  $('#date_from').val(fDate(Date.now().moveToFirstDayOfYear()));
+                  $('#date_to').val(fDate(Date.now().moveToLastDayOfYear()));
+                  break;
+                case '8':  //last year
+                  $('#date_from').val(fDate(Date.parse('1 year ago').moveToFirstDayOfYear()));
+                  $('#date_to').val(fDate(Date.parse('1 year ago').moveToLastDayOfYear()));
+                  break;
               }
+        	}
 
-          </script>
+        	function showDatePicker() {
+        		$( "#dialog-date-filter" ).dialog({
+        			resizable: false,
+        			draggable: false,
+        			height:200,
+        			width:300,
+        			modal: true,
+        			dialogClass: "alert",
+        			buttons: {
+        				"确定": function() {
+                  $("#date-filter-form").submit();
+                  // $( this ).dialog( "close" );
+        				},
+        				"取消": function() {
+        					$( this ).dialog( "close" );
+        				}
+        			},
+              open: function(event, ui) {
+                $("#quickDateRanges").val(0);
+              },
+          	});
+        	}
+
+          function getMonday(d) {
+            var day = d.getDay(),
+            diff = d.getDate() - day + 1 + (day == 0 ? -7 : 0); 
+            return new Date(d.setDate(diff));
+          }
+
+      </script>
+        
+      {% block js %} 
+      {% endblock %}
       
-          {% block content %} 
-          {% endblock %}
-      
-          <div id="dialog-date-filter" title="选择时间范围">
+      <div id="dialog-date-filter" title="选择时间范围">
             <form id="date-filter-form" action="{% url filter_date_overtime %}">
               <p>
                 <select id="quickDateRanges" name="quickDateRanges" onchange="changeDate();"> 							
@@ -212,26 +227,15 @@
               </p>
             </form>
           </div>
-      
-        </div>
-
-        <footer>
-            <p>Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
-        </footer>
+          
+      <hr>
+        
+      <footer>
+          <p>Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
+      </footer>
 
     </div>
-        
-        <!-- Le javascript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-    	<script src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
-        <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
-        
-    	<script src="{{ STATIC_URL }}js/date.js"></script>
-    	<script src="{{ STATIC_URL }}js/jquery-ui-1.8.22.custom.min.js"></script>
-    	<script src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js"></script>
-    	<script src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
-    	<script src="{{ STATIC_URL }}js/messages_cn.js"></script>
+
         
 	</body>
 </html>

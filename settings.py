@@ -160,7 +160,7 @@ AUTH_PROFILE_MODULE = 'overtime.UserProfile'
 
 EMAIL_HOST = 'smtp.telecom-sh.com'
 EMAIL_HOST_USER = 'haibin.peng@jinjiang.com'
-EMAIL_HOST_PASSWORD = '00000'
+EMAIL_HOST_PASSWORD = '12qw1234'
 
 SENDING_EMAIL = False
 

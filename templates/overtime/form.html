@@ -3,27 +3,65 @@
 {% block title %}{% if form.instance.id %}修改加班{% else %}新增加班{% endif %}{% endblock %}
 
 {% block content %} 
-  <div class="box post">
-      <h2>{% if form.instance.id %}修改{% else %}新增加班{% endif %}</h2>
-      <form action="" method="post">
-          {% csrf_token %}
-          <table>
-          {{ form.as_table }}
-          </table>
-          <p>
-              <input type="submit" class="submit" value="提交" />
-          </p>
-      </form>
-  </div>
-  <div class="box">
-      <p>
-        <a class="linkbutton" href="{% url overtime %}">返回</a>
-      </p>
-  </div>
+
+  <div class="page-header"><h1>{% if form.instance.id %}修改加班{% else %}新增加班{% endif %}</h1></div>
+  
+  <form method="post" class="form-horizontal">
+      {% csrf_token %}
+      <div class="control-group">
+        <label for="id_subject" class="control-label">标题</label> 
+        <div class="controls">
+          {{ form.subject }}
+          {% if form.subject.errors %}<div class="alert alert-error">{{ form.subject.errors }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="id_start_time" class="control-label">开始时间</label>
+        <div class="controls">
+          {{ form.start_time }}
+          {% if form.start_time.errors %}<div class="alert alert-error">{{ form.start_time.errors }}</div>{% endif %}
+        </div>
+      </div>  
+      <div class="control-group">
+        <label for="id_end_time" class="control-label">结束时间</label>
+        <div class="controls">
+          {{ form.end_time }}
+          {% if form.end_time.errors %}<div class="alert alert-error">{{ form.end_time.errors }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="id_participants" class="control-label">参加人员</label>
+        <div class="controls">
+          {{ form.participants }}
+          {% if form.participants.errors %}<div class="alert alert-error">{{ form.participants.errors }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="id_content" class="control-label">备注</label>
+        <div class="controls">
+          {{ form.content }}
+          {% if form.content.errors %}<div class="alert alert-error">{{ form.content.errors }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn">提交</button>
+          <input type="hidden" name="next" value="{{ next }}" />
+        </div>
+      </div>
+  </form>
+
+  <p>
+    <a class="btn" href="{% url overtime %}">返回</a>
+  </p>
+  
+{% endblock %}
+
+{% block js %} 
+ 
   <script type="text/javascript" charset="utf-8">
     $('#id_start_time').datetimepicker({dateFormat: "yy-mm-dd"});
     $('#id_end_time').datetimepicker({dateFormat: "yy-mm-dd"});
   </script>
-  
         
 {% endblock %}
