@@ -6,11 +6,8 @@
 
   <div class="page-header"><h1>加班统计</h1></div>
   
-  <p><a class="btn" href="{% url excel_overtime %}">导出报表</a></p>
-
-      <div class="float_right">
-        <span id="date_filter" onclick="showDatePicker();">{{ date_filter }}</span>
-      </div>
+  <span class="pull-right" id="date-filter" onclick="showDatePicker();">{{ date_filter }}</span>
+  <a class="btn" href="{% url excel_overtime %}">导出报表</a>
 
   <div class="row">
     <div class="span5">

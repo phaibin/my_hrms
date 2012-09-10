@@ -6,21 +6,23 @@
 
   <div class="page-header"><h1>加班列表</h1></div>
   
-  {% if "overtime.add_application" in request.user.get_group_permissions %}<a class="btn" href="{% url new_overtime %}">新增加班申请</a>{% endif %}
-  <a class="btn" href="{% url overview_overtime %}">加班统计</a>
-      
-  <div class="float_right">
-    <span id="date_filter" onclick="showDatePicker();">{{ date_filter }}</span>
-  </div>
+  <p>
+    {% if "overtime.add_application" in request.user.get_group_permissions %}<a class="btn" href="{% url new_overtime %}">新增加班申请</a>{% endif %}
+    <a class="btn" href="{% url overview_overtime %}">加班统计</a>
+  </p>
       
   {% if "overtime.filter_application" in request.user.get_group_permissions %}
-  <ul class="nav nav-tabs">
-    <li class="{% ifequal filter 'all' %}active{% endifequal %}"><a href="{% url filter_all_overtime %}">全部</a></li>
-    <li class="{% ifequal filter 'new' %}active{% endifequal %}"><a href="{% url filter_new_overtime %}">未提交</a></li>
-    <li class="{% ifequal filter 'applying' %}active{% endifequal %}"><a href="{% url filter_applying_overtime %}">申请中</a></li>
-    <li class="{% ifequal filter 'approved' %}active{% endifequal %}"><a href="{% url filter_approved_overtime %}">通过</a></li>
-  </ul>
+  <p>
+    <span id="date-filter" class="pull-right" onclick="showDatePicker();">{{ date_filter }}</span>
+    <ul class="nav nav-tabs">
+      <li class="{% ifequal filter 'all' %}active{% endifequal %}"><a href="{% url filter_all_overtime %}">全部</a></li>
+      <li class="{% ifequal filter 'new' %}active{% endifequal %}"><a href="{% url filter_new_overtime %}">未提交</a></li>
+      <li class="{% ifequal filter 'applying' %}active{% endifequal %}"><a href="{% url filter_applying_overtime %}">申请中</a></li>
+      <li class="{% ifequal filter 'approved' %}active{% endifequal %}"><a href="{% url filter_approved_overtime %}">通过</a></li>
+    </ul>
+  </p>
   {% endif %}
+  
   
 
   {% if is_hr %}

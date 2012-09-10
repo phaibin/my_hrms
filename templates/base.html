@@ -12,10 +12,10 @@
     <style type="text/css">
       body {
         padding-top: 60px;
-        padding-bottom: 40px;
       }
     </style>
     <link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/docs.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -70,13 +70,42 @@
 
       {% block content %} 
       {% endblock %}
-          
+        
+      <div id="dialog-date-filter" title="选择时间范围">
+        <form id="date-filter-form" class="form-horizontal" action="{% url filter_date_overtime %}">
+          <select id="quickDateRanges" name="quickDateRanges" class="span2" onchange="changeDate();"> 							
+            <option disabled="disabled" value="0">选择预设</option> 							
+            <optgroup class="quick" label="预置日期"> 							
+              <option value="1">今天</option>
+              <option value="2">昨天</option>
+              <option value="3">本周</option>
+              <option value="4">上周</option>
+              <option value="5">本月</option>
+              <option value="6">上月</option>
+              <option value="7">今年</option>
+              <option value="8">去年</option>
+            </optgroup>
+        	</select>
+          <div class="control-group">
+            <label for="date_from" class="control-label">从</label>
+            <div class="controls">
+              <input type="text" id="date_from" name="date_from" class="span2 required" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label for="date_to" class="control-label">到</label>
+            <div class="controls">
+              <input type="text" id="date_to" name="date_to" class="span2 required" />
+            </div>
+          </div>
+        </form>
+      </div>  
         
       <!-- Le javascript
       ================================================== -->
       <!-- Placed at the end of the document so the pages load faster -->
     	<script src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
-        <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+      <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
         
     	<script src="{{ STATIC_URL }}js/date.js"></script>
     	<script src="{{ STATIC_URL }}js/jquery-ui-1.8.22.custom.min.js"></script>
@@ -170,8 +199,8 @@
         		$( "#dialog-date-filter" ).dialog({
         			resizable: false,
         			draggable: false,
-        			height:200,
-        			width:300,
+        			height:250,
+        			width:420,
         			modal: true,
         			dialogClass: "alert",
         			buttons: {
@@ -199,43 +228,14 @@
         
       {% block js %} 
       {% endblock %}
-      
-      <div id="dialog-date-filter" title="选择时间范围">
-            <form id="date-filter-form" action="{% url filter_date_overtime %}">
-              <p>
-                <select id="quickDateRanges" name="quickDateRanges" onchange="changeDate();"> 							
-                  <option disabled="disabled" value="0">选择预设</option> 							
-                  <optgroup class="quick" label="预置日期"> 							
-                    <option value="1">今天</option>
-                    <option value="2">昨天</option>
-                    <option value="3">本周</option>
-                    <option value="4">上周</option>
-                    <option value="5">本月</option>
-                    <option value="6">上月</option>
-                    <option value="7">今年</option>
-                    <option value="8">去年</option>
-                  </optgroup>
-              	</select>
-            	</p><br>
-              <p>
-                <label for="date_from">从</label>
-                <input type="text" id="date_from" name="date_from" class="required" />
-              </p>
-              <p>
-                <label for="date_to">到</label>
-                <input type="text" id="date_to" name="date_to" class="required" />
-              </p>
-            </form>
-          </div>
-          
-      <hr>
-        
-      <footer>
-          <p>Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
-      </footer>
 
     </div>
-
-        
+    
+    <footer class="footer">
+      <div class="container">
+        <p>Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
+      </dv>
+    </footer>
+    
 	</body>
 </html>
