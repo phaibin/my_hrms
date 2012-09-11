@@ -36,7 +36,7 @@
             <ul class="nav">
               <li class="{% ifequal request.path '/' %}active{% endifequal %}"><a href="/">首页</a></li>
               <li class="{% ifequal current_app 'overtime' %}active{% endifequal %}"><a href="{% url overtime %}">加班系统</a></li>
-              <li class=""><a href="#about">请假系统</a></li>
+              <li class=""><a href="#">请假系统</a></li>
               <li class="{% ifequal request.path '/about' %}active{% endifequal %}"><a href="/about">关于</a></li>
             </ul>
             <ul class="nav pull-right">
@@ -232,7 +232,7 @@
     
     <footer class="footer">
       <div class="container">
-        <p>Copyright © 2012 <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
+        <p>Copyright © 2012 JinJiang <a href="https://www.djangoproject.com" target="_blank"><img src="{{ STATIC_URL }}images/powered_by_django.gif"></img></a></p>
       </dv>
     </footer>
     

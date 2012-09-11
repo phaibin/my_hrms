@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^overtime/', include('overtime.urls')),
+    url(r'^about/$', direct_to_template, {'template':'about.html'}),
     url(r'^accounts/login/$', login, {'template_name':'login.html'}, name='login'),
     url(r'^accounts/logout/$', logout, {'next_page':'/'}, name='logout'),
 )
