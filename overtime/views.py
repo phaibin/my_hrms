@@ -17,23 +17,10 @@ import xlwt
 import re
 from django.utils.encoding import smart_str
 
-char_field_errors = {
-    'required': '必填字段'
-}
-datetime_field_errors = {
-    'required': '必填字段',
-    'invalid': '格式错误'
-}
-
 class ApplicationForm(forms.ModelForm):
-    subject = forms.CharField(widget=forms.TextInput(), label=u'标题', error_messages=char_field_errors)
-    start_time = forms.DateTimeField(label=u'开始时间', error_messages=datetime_field_errors)
-    end_time = forms.DateTimeField(label=u'结束时间', error_messages=datetime_field_errors)
-    participants = forms.ModelMultipleChoiceField(label=u'参加人员', queryset=UserProfile.objects.userprofile_in_employee_and_PM(), error_messages=char_field_errors)
-    content = forms.CharField(label=u'备注', widget=forms.Textarea(), error_messages=char_field_errors)
+    participants = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.userprofile_in_employee_and_PM())
     class Meta:
         model = Application
-        fields  = ['subject', 'start_time', 'end_time', 'participants', 'content']
 
 def myrender(request, *args, **kwargs):
     kwargs['current_app'] = 'overtime'

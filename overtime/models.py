@@ -44,14 +44,14 @@ class ApplicationState(models.Model):
         return self.name
                 
 class Application(models.Model):
-    subject = models.CharField(max_length=100)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    subject = models.CharField(max_length=100, verbose_name='主题')
+    start_time = models.DateTimeField(verbose_name='开始时间')
+    end_time = models.DateTimeField(verbose_name='结束时间')
     application_date = models.DateTimeField(auto_now_add=True)
-    participants = models.ManyToManyField(User, null=True, related_name='joined_applications')
+    participants = models.ManyToManyField(User, null=True, related_name='joined_applications', verbose_name='参加人员')
     state = models.ForeignKey(ApplicationState, editable=False, null=True)
     applicant = models.ForeignKey(User, related_name='applied_applications', editable=False)
-    content = models.TextField()
+    content = models.TextField(verbose_name='备注')
     modified_by = models.ForeignKey(User, editable=False)
     modified_on = models.DateTimeField(auto_now=True, editable=False)
 

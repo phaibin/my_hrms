@@ -14,41 +14,15 @@
   
   <form method="post" class="form-horizontal">
       {% csrf_token %}
+      {% for field in form %}
       <div class="control-group">
-        <label for="id_subject" class="control-label">标题</label> 
+        <label for="id_subject" class="control-label">{{ field.label }}</label>
         <div class="controls">
-          {{ form.subject }}
-          {% if form.subject.errors %}<div class="alert alert-error">{{ form.subject.errors }}</div>{% endif %}
+          {{ field }}
+          {% if field.errors %}<div class="alert alert-error">{{ field.errors }}</div>{% endif %}
         </div>
       </div>
-      <div class="control-group">
-        <label for="id_start_time" class="control-label">开始时间</label>
-        <div class="controls">
-          {{ form.start_time }}
-          {% if form.start_time.errors %}<div class="alert alert-error">{{ form.start_time.errors }}</div>{% endif %}
-        </div>
-      </div>  
-      <div class="control-group">
-        <label for="id_end_time" class="control-label">结束时间</label>
-        <div class="controls">
-          {{ form.end_time }}
-          {% if form.end_time.errors %}<div class="alert alert-error">{{ form.end_time.errors }}</div>{% endif %}
-        </div>
-      </div>
-      <div class="control-group">
-        <label for="id_participants" class="control-label">参加人员</label>
-        <div class="controls">
-          {{ form.participants }}
-          {% if form.participants.errors %}<div class="alert alert-error">{{ form.participants.errors }}</div>{% endif %}
-        </div>
-      </div>
-      <div class="control-group">
-        <label for="id_content" class="control-label">备注</label>
-        <div class="controls">
-          {{ form.content }}
-          {% if form.content.errors %}<div class="alert alert-error">{{ form.content.errors }}</div>{% endif %}
-        </div>
-      </div>
+      {% endfor %}
       <div class="control-group">
         <div class="controls">
           <button type="submit" class="btn">提交</button>
